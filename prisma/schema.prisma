@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum StatusAgendamento {
+  AGENDADO
+  CONFIRMADO
+  CONCLUIDO
+  CANCELADO
+  NO_SHOW
+}
+
+model Usuario {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  nome      String
+  senha     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agendamentos Agendamento[]
+
+  @@map("usuarios")
+}
+
+model Cliente {
+  id        String   @id @default(cuid())
+  nome      String
+  telefone  String
+  email     String?
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agendamentos Agendamento[]
+
+  @@map("clientes")
+}
+
+model Servico {
+  id         String   @id @default(cuid())
+  nome       String
+  descricao  String?
+  preco      Float
+  duracaoMin Int // Duração em minutos
+  ativo      Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  agendamentos Agendamento[]
+
+  @@map("servicos")
+}
+
+model Agendamento {
+  id          String            @id @default(cuid())
+  dataHora    DateTime
+  status      StatusAgendamento @default(AGENDADO)
+  observacoes String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  usuarioId String
+  clienteId String
+  servicoId String
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  cliente Cliente @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  servico Servico @relation(fields: [servicoId], references: [id], onDelete: Restrict)
+
+  @@index([usuarioId])
+  @@index([clienteId])
+  @@index([servicoId])
+  @@index([dataHora])
+  @@map("agendamentos")
+}
