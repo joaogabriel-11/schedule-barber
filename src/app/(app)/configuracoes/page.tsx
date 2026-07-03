@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { Clock, User, Mail } from "lucide-react";
 
 export default function ConfiguracoesPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [loading, setLoading] = useState(false);
   const [loadingAccount, setLoadingAccount] = useState(false);
   const [error, setError] = useState("");
@@ -69,6 +69,9 @@ export default function ConfiguracoesPage() {
         return;
       }
 
+      // Recarrega as configurações para garantir que os dados estejam atualizados
+      await fetchConfiguracao();
+
       setSuccess("Configurações salvas com sucesso!");
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
@@ -96,6 +99,24 @@ export default function ConfiguracoesPage() {
         setAccountError(data.error || "Erro ao atualizar dados da conta");
         return;
       }
+
+      const updatedUser = await response.json();
+
+      // Atualiza a sessão com os novos dados
+      await update({
+        ...session,
+        user: {
+          ...session?.user,
+          name: updatedUser.nome,
+          email: updatedUser.email
+        }
+      });
+
+      // Atualiza o estado local com os novos dados
+      setAccountData({
+        nome: updatedUser.nome,
+        email: updatedUser.email
+      });
 
       setAccountSuccess("Dados da conta atualizados com sucesso!");
       setTimeout(() => setAccountSuccess(""), 3000);

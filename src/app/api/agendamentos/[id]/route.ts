@@ -182,16 +182,11 @@ export async function DELETE(
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    const agendamentoCancelado = await prisma.agendamento.update({
+    await prisma.agendamento.delete({
       where: { id },
-      data: { status: "CANCELADO" },
-      include: {
-        cliente: true,
-        servico: true,
-      },
     });
 
-    return NextResponse.json(agendamentoCancelado);
+    return NextResponse.json({ message: "Agendamento excluído com sucesso" });
   } catch (error) {
     console.error("Erro ao cancelar agendamento:", error);
     return NextResponse.json(

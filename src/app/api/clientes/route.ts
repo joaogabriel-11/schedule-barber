@@ -15,13 +15,14 @@ export async function GET(request: NextRequest) {
   try {
     const where = search
       ? {
+          usuarioId: session.user.id,
           ativo: true,
           OR: [
             { nome: { contains: search, mode: "insensitive" as const } },
             { telefone: { contains: search } }
           ]
         }
-      : { ativo: true };
+      : { usuarioId: session.user.id, ativo: true };
 
     const clientes = await prisma.cliente.findMany({
       where,
@@ -60,7 +61,8 @@ export async function POST(request: NextRequest) {
       data: {
         nome,
         telefone,
-        email: email || null
+        email: email || null,
+        usuarioId: session.user.id
       }
     });
 

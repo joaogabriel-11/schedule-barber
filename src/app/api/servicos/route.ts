@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const servicos = await prisma.servico.findMany({
-      where: { ativo: true },
+      where: { usuarioId: session.user.id, ativo: true },
       orderBy: { nome: "asc" }
     });
 
@@ -48,7 +48,8 @@ export async function POST(request: NextRequest) {
         nome,
         descricao: descricao || null,
         preco: parseFloat(preco),
-        duracaoMin: parseInt(duracaoMin)
+        duracaoMin: parseInt(duracaoMin),
+        usuarioId: session.user.id
       }
     });
 

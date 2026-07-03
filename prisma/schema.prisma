@@ -37,6 +37,8 @@ model Usuario {
   agendamentos Agendamento[]
   configuracao Configuracao?
   tokensRecuperacao TokenRecuperacao[]
+  clientes     Cliente[]
+  servicos     Servico[]
 
   @@map("usuarios")
 }
@@ -50,8 +52,12 @@ model Cliente {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  usuarioId String
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
   agendamentos Agendamento[]
 
+  @@index([usuarioId])
   @@map("clientes")
 }
 
@@ -65,8 +71,12 @@ model Servico {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  usuarioId String
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
   agendamentos Agendamento[]
 
+  @@index([usuarioId])
   @@map("servicos")
 }
 

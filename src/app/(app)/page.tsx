@@ -41,6 +41,7 @@ export default function AgendaPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAgendamento, setSelectedAgendamento] =
     useState<Agendamento | null>(null);
   const [error, setError] = useState("");
@@ -209,12 +210,17 @@ export default function AgendaPage() {
         return;
       }
 
+      setShowDeleteModal(false);
       setShowEditModal(false);
       setSelectedAgendamento(null);
       fetchData();
     } catch (error) {
       setError("Erro ao conectar com o servidor");
     }
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -237,15 +243,15 @@ export default function AgendaPage() {
   const getEventBackgroundColor = (status: string) => {
     switch (status) {
       case "AGENDADO":
-        return "#3B82F6";
+        return "#F59E0B"; // Amarelo
       case "CONFIRMADO":
-        return "#10B981";
+        return "#3B82F6"; // Azul
       case "CONCLUIDO":
-        return "#8B5CF6";
+        return "#10B981"; // Verde
       case "CANCELADO":
-        return "#EF4444";
+        return "#6B7280"; // Cinza
       case "NO_SHOW":
-        return "#F59E0B";
+        return "#EF4444"; // Vermelho
       default:
         return "#6B7280";
     }
@@ -268,16 +274,37 @@ export default function AgendaPage() {
     }
   };
 
-  const events = agendamentos.map((a) => ({
-    id: a.id,
-    title: `${a.cliente.nome} - ${a.servico.nome} - ${getStatusLabel(a.status)}`,
-    start: a.dataHora,
-    end: new Date(
+  const events = agendamentos.map((a) => {
+    const endTime = new Date(
       new Date(a.dataHora).getTime() + a.servico.duracaoMin * 60000,
-    ).toISOString(),
-    backgroundColor: getEventBackgroundColor(a.status),
-    extendedProps: { agendamento: a },
-  }));
+    );
+    // Subtrai 1 segundo do horário de término para evitar que eventos encostados sejam tratados como sobrepostos
+    endTime.setSeconds(endTime.getSeconds() - 1);
+    
+    return {
+      id: a.id,
+      title: `${a.cliente.nome} - ${a.servico.nome}`,
+      start: a.dataHora,
+      end: endTime.toISOString(),
+      backgroundColor: getEventBackgroundColor(a.status),
+      extendedProps: { 
+        agendamento: a,
+        clienteNome: a.cliente.nome,
+        servicoNome: a.servico.nome,
+        status: a.status,
+        duration: a.servico.duracaoMin
+      },
+      // Tooltip com informações completas (usando horário original)
+      tooltip: `${a.cliente.nome} - ${a.servico.nome}\n${new Date(a.dataHora).toLocaleString('pt-BR', { 
+        dateStyle: 'short', 
+        timeStyle: 'short' 
+      })} - ${new Date(new Date(a.dataHora).getTime() + a.servico.duracaoMin * 60000).toLocaleTimeString('pt-BR', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      })}\nStatus: ${getStatusLabel(a.status)}`,
+    };
+  });
 
   if (loading) {
     return (
@@ -379,6 +406,124 @@ export default function AgendaPage() {
               events={events}
               editable={false}
               selectable={true}
+              slotDuration="00:10:00"
+              slotLabelInterval="00:30:00"
+              displayEventEnd={true}
+              eventMinHeight={50}
+              eventMinWidth={80}
+              slotEventOverlap={false}
+              eventDidMount={(info) => {
+                // Adiciona tooltip nativo com informações completas
+                const tooltip = info.event.extendedProps.tooltip as string;
+                if (tooltip) {
+                  info.el.setAttribute('title', tooltip);
+                }
+              }}
+              eventContent={(eventInfo) => {
+                const props = eventInfo.event.extendedProps as any;
+                const endDate = eventInfo.event.end as Date | null;
+                const startDate = eventInfo.event.start as Date;
+                const duration = endDate ? 
+                  (endDate.getTime() - startDate.getTime()) / 60000 : 
+                  0;
+                
+                const formatTime = (date: Date) => {
+                  return date.toLocaleTimeString('pt-BR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: false 
+                  });
+                };
+                
+                const startTime = startDate;
+                const endTime = endDate || new Date(startTime.getTime() + duration * 60000);
+                const timeRange = `${formatTime(startTime)} - ${formatTime(endTime)}`;
+                
+                // Para eventos muito curtos, mostra horário, cliente e serviço
+                if (duration < 20) {
+                  return (
+                    <div style={{
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      justifyContent: 'flex-start',
+                      padding: '2px 4px',
+                      overflow: 'hidden',
+                      gap: '1px'
+                    }}>
+                      <span style={{
+                        fontWeight: '500',
+                        fontSize: '9px',
+                        color: 'rgba(255,255,255,0.8)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        width: '100%',
+                        textAlign: 'left'
+                      }}>
+                        {timeRange}
+                      </span>
+                      <span style={{
+                        fontWeight: '600',
+                        fontSize: '10px',
+                        color: 'white',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        width: '100%',
+                        textAlign: 'left'
+                      }}>
+                        {props.clienteNome} - {props.servicoNome}
+                      </span>
+                    </div>
+                  );
+                }
+                
+                // Para eventos normais, mostra horário, cliente e serviço
+                return (
+                  <div style={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    padding: '4px 6px',
+                    overflow: 'hidden',
+                    gap: '2px'
+                  }}>
+                    <div style={{
+                      fontWeight: '500',
+                      fontSize: '10px',
+                      color: 'rgba(255,255,255,0.8)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {timeRange}
+                    </div>
+                    <div style={{
+                      fontWeight: '600',
+                      fontSize: '12px',
+                      color: 'white',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {props.clienteNome}
+                    </div>
+                    <div style={{
+                      fontSize: '11px',
+                      color: 'rgba(255,255,255,0.9)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {props.servicoNome}
+                    </div>
+                  </div>
+                );
+              }}
               select={(info) => {
                 const dateStr = info.startStr.split("T")[0];
                 const timeStr =
@@ -595,7 +740,7 @@ export default function AgendaPage() {
               <div className="mt-6 flex justify-between gap-3">
                 <button
                   type="button"
-                  onClick={handleCancelAgendamento}
+                  onClick={handleDeleteClick}
                   className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                 >
                   Cancelar Agendamento
@@ -621,6 +766,35 @@ export default function AgendaPage() {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Confirmar Cancelamento
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Tem certeza que deseja cancelar este agendamento? Esta ação não pode ser desfeita.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Voltar
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelAgendamento}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              >
+                Confirmar Cancelamento
+              </button>
+            </div>
           </div>
         </div>
       )}

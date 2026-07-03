@@ -25,6 +25,10 @@ export async function GET(
       );
     }
 
+    if (servico.usuarioId !== session.user.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+    }
+
     return NextResponse.json(servico);
   } catch (error) {
     console.error("Erro ao buscar serviço:", error);
@@ -55,6 +59,21 @@ export async function PUT(
         { error: "Nome, preço e duração são obrigatórios" },
         { status: 400 }
       );
+    }
+
+    const servicoExistente = await prisma.servico.findUnique({
+      where: { id }
+    });
+
+    if (!servicoExistente) {
+      return NextResponse.json(
+        { error: "Serviço não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    if (servicoExistente.usuarioId !== session.user.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
     const servico = await prisma.servico.update({
@@ -89,6 +108,21 @@ export async function DELETE(
 
   try {
     const { id } = await params;
+    const servicoExistente = await prisma.servico.findUnique({
+      where: { id }
+    });
+
+    if (!servicoExistente) {
+      return NextResponse.json(
+        { error: "Serviço não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    if (servicoExistente.usuarioId !== session.user.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+    }
+
     const servico = await prisma.servico.update({
       where: { id },
       data: { ativo: false }

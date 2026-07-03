@@ -25,6 +25,10 @@ export async function GET(
       );
     }
 
+    if (cliente.usuarioId !== session.user.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+    }
+
     return NextResponse.json(cliente);
   } catch (error) {
     console.error("Erro ao buscar cliente:", error);
@@ -55,6 +59,21 @@ export async function PUT(
         { error: "Nome e telefone são obrigatórios" },
         { status: 400 }
       );
+    }
+
+    const clienteExistente = await prisma.cliente.findUnique({
+      where: { id }
+    });
+
+    if (!clienteExistente) {
+      return NextResponse.json(
+        { error: "Cliente não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    if (clienteExistente.usuarioId !== session.user.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
     const cliente = await prisma.cliente.update({
@@ -88,6 +107,21 @@ export async function DELETE(
 
   try {
     const { id } = await params;
+    const clienteExistente = await prisma.cliente.findUnique({
+      where: { id }
+    });
+
+    if (!clienteExistente) {
+      return NextResponse.json(
+        { error: "Cliente não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    if (clienteExistente.usuarioId !== session.user.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
+    }
+
     const cliente = await prisma.cliente.update({
       where: { id },
       data: { ativo: false }
