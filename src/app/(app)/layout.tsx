@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { Calendar, Users, Scissors, BarChart3, Settings, LogOut, Bell } from "lucide-react";
+import { Calendar, Users, Scissors, BarChart3, Settings, LogOut, Bell, Shield } from "lucide-react";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -25,6 +25,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       router.push("/login");
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.role === "ADMIN") {
+      // Redirect admin users to /admin if they try to access other pages
+      if (pathname !== "/admin" && pathname !== "/login") {
+        router.push("/admin");
+      }
+    }
+  }, [status, session, pathname, router]);
 
   const fetchNotificationCount = async () => {
     try {
@@ -69,14 +78,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  const navItems = [
-    { path: "/", label: "Agenda", icon: Calendar },
-    { path: "/clientes", label: "Clientes", icon: Users },
-    { path: "/servicos", label: "Serviços", icon: Scissors },
-    { path: "/relatorios", label: "Relatórios", icon: BarChart3 },
-    { path: "/notificacoes", label: "Notificações", icon: Bell, showBadge: true },
-    { path: "/configuracoes", label: "Configurações", icon: Settings }
-  ];
+  const navItems = session?.user?.role === "ADMIN"
+    ? [
+        { path: "/admin", label: "Admin", icon: Shield }
+      ]
+    : [
+        { path: "/", label: "Agenda", icon: Calendar },
+        { path: "/clientes", label: "Clientes", icon: Users },
+        { path: "/servicos", label: "Serviços", icon: Scissors },
+        { path: "/relatorios", label: "Relatórios", icon: BarChart3 },
+        { path: "/notificacoes", label: "Notificações", icon: Bell, showBadge: true },
+        { path: "/configuracoes", label: "Configurações", icon: Settings }
+      ];
 
   if (isMobile) {
     return (

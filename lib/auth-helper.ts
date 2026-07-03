@@ -18,11 +18,23 @@ export async function getAuthenticatedSession(request: NextRequest) {
       user: {
         id: token.id as string,
         email: token.email as string,
-        name: token.name as string
+        name: token.name as string,
+        role: token.role as string
       }
     };
   } catch (error) {
     console.error("Erro ao obter token:", error);
     return null;
   }
+}
+
+export async function getAdminSession(request: NextRequest) {
+  const session = await getAuthenticatedSession(request);
+  
+  if (!session || session.user.role !== "ADMIN") {
+    console.log("Acesso negado: usuário não é admin");
+    return null;
+  }
+  
+  return session;
 }

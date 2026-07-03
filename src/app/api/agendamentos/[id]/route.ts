@@ -5,7 +5,7 @@ import { validarConflitoAgendamento } from "../../../../../lib/validarConflito";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getAuthenticatedSession(request);
 
@@ -20,14 +20,14 @@ export async function GET(
       where: { id },
       include: {
         cliente: true,
-        servico: true
-      }
+        servico: true,
+      },
     });
 
     if (!agendamento) {
       return NextResponse.json(
         { error: "Agendamento não encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -40,14 +40,14 @@ export async function GET(
     console.error("Erro ao buscar agendamento:", error);
     return NextResponse.json(
       { error: "Erro ao buscar agendamento" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getAuthenticatedSession(request);
 
@@ -62,13 +62,13 @@ export async function PATCH(
 
     const agendamentoExistente = await prisma.agendamento.findUnique({
       where: { id },
-      include: { servico: true }
+      include: { servico: true },
     });
 
     if (!agendamentoExistente) {
       return NextResponse.json(
         { error: "Agendamento não encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -81,13 +81,13 @@ export async function PATCH(
 
     if (servicoId) {
       const novoServico = await prisma.servico.findUnique({
-        where: { id: servicoId }
+        where: { id: servicoId },
       });
 
       if (!novoServico) {
         return NextResponse.json(
           { error: "Serviço não encontrado" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -103,22 +103,25 @@ export async function PATCH(
         session.user.id,
         dataHoraDate,
         duracaoMin,
-        id
+        id,
       );
 
       if (temConflito) {
-        const horaFormatada = conflitoCom?.dataHora.toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit"
-        });
+        const horaFormatada = conflitoCom?.dataHora.toLocaleTimeString(
+          "pt-BR",
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+          },
+        );
         const dataFormatada = conflitoCom?.dataHora.toLocaleDateString("pt-BR");
         return NextResponse.json(
           {
             error: "Conflito de horário",
             mensagem: `Já existe um agendamento para ${dataFormatada}, ${horaFormatada}`,
-            conflitoCom
+            conflitoCom,
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
     }
@@ -129,13 +132,16 @@ export async function PATCH(
         clienteId: clienteId || agendamentoExistente.clienteId,
         servicoId: servicoId || agendamentoExistente.servicoId,
         dataHora: dataHoraDate,
-        observacoes: observacoes !== undefined ? observacoes : agendamentoExistente.observacoes,
-        status: status || agendamentoExistente.status
+        observacoes:
+          observacoes !== undefined
+            ? observacoes
+            : agendamentoExistente.observacoes,
+        status: status || agendamentoExistente.status,
       },
       include: {
         cliente: true,
-        servico: true
-      }
+        servico: true,
+      },
     });
 
     return NextResponse.json(agendamento);
@@ -143,14 +149,14 @@ export async function PATCH(
     console.error("Erro ao atualizar agendamento:", error);
     return NextResponse.json(
       { error: "Erro ao atualizar agendamento" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getAuthenticatedSession(request);
 
@@ -162,13 +168,13 @@ export async function DELETE(
     const { id } = await params;
 
     const agendamento = await prisma.agendamento.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!agendamento) {
       return NextResponse.json(
         { error: "Agendamento não encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -181,8 +187,8 @@ export async function DELETE(
       data: { status: "CANCELADO" },
       include: {
         cliente: true,
-        servico: true
-      }
+        servico: true,
+      },
     });
 
     return NextResponse.json(agendamentoCancelado);
@@ -190,7 +196,7 @@ export async function DELETE(
     console.error("Erro ao cancelar agendamento:", error);
     return NextResponse.json(
       { error: "Erro ao cancelar agendamento" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

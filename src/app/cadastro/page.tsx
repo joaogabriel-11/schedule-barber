@@ -19,7 +19,7 @@ export default function CadastroPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/cadastro", {
+      const response = await fetch("/api/cadastro/iniciar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -30,11 +30,12 @@ export default function CadastroPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Erro ao criar conta");
+        setError(data.error || "Erro ao iniciar cadastro");
         return;
       }
 
-      router.push("/login");
+      // Redirect to verification page with email
+      router.push(`/cadastro/verificar?email=${encodeURIComponent(formData.email)}`);
     } catch (err) {
       setError("Erro ao conectar com o servidor");
     } finally {
