@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../../../../lib/prisma";
 import bcrypt from "bcryptjs";
 
 export async function POST(request: NextRequest) {
@@ -10,25 +10,25 @@ export async function POST(request: NextRequest) {
     if (!nome || !email || !senha) {
       return NextResponse.json(
         { error: "Todos os campos são obrigatórios" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (senha.length < 6) {
       return NextResponse.json(
         { error: "A senha deve ter no mínimo 6 caracteres" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const existingUser = await prisma.usuario.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
         { error: "Email já cadastrado" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,19 +38,19 @@ export async function POST(request: NextRequest) {
       data: {
         nome,
         email,
-        senha: hashedPassword
-      }
+        senha: hashedPassword,
+      },
     });
 
     return NextResponse.json(
       { message: "Usuário criado com sucesso", userId: usuario.id },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
     return NextResponse.json(
       { error: "Erro ao criar usuário" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

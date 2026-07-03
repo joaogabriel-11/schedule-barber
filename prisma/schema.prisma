@@ -29,6 +29,7 @@ model Usuario {
   updatedAt DateTime @updatedAt
 
   agendamentos Agendamento[]
+  configuracao Configuracao?
 
   @@map("usuarios")
 }
@@ -83,4 +84,17 @@ model Agendamento {
   @@index([servicoId])
   @@index([dataHora])
   @@map("agendamentos")
+}
+
+model Configuracao {
+  id           String   @id @default(cuid())
+  usuarioId    String   @unique
+  horarioInicio String  @default("08:00")
+  horarioFim   String   @default("20:00")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("configuracoes")
 }

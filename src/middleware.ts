@@ -3,13 +3,14 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   const isAuthPage = pathname === "/login" || pathname === "/cadastro";
   const isApiAuth = pathname.startsWith("/api/auth");
   const isApiCadastro = pathname.startsWith("/api/cadastro");
 
-  const token = request.cookies.get("next-auth.session-token") || 
-                request.cookies.get("__Secure-next-auth.session-token");
+  const token =
+    request.cookies.get("next-auth.session-token") ||
+    request.cookies.get("__Secure-next-auth.session-token");
 
   if (isAuthPage || isApiAuth || isApiCadastro) {
     if (token && isAuthPage) {
@@ -26,5 +27,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"]
+  matcher: ["/clientes", "/servicos", "/", "/agenda"],
 };
