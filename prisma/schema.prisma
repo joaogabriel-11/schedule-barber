@@ -14,7 +14,6 @@ datasource db {
 
 enum StatusAgendamento {
   AGENDADO
-  CONFIRMADO
   CONCLUIDO
   CANCELADO
   NO_SHOW
@@ -34,11 +33,11 @@ model Usuario {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  agendamentos Agendamento[]
-  configuracao Configuracao?
+  agendamentos      Agendamento[]
+  configuracao      Configuracao?
   tokensRecuperacao TokenRecuperacao[]
-  clientes     Cliente[]
-  servicos     Servico[]
+  clientes          Cliente[]
+  servicos          Servico[]
 
   @@map("usuarios")
 }
@@ -53,7 +52,7 @@ model Cliente {
   updatedAt DateTime @updatedAt
 
   usuarioId String
-  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   agendamentos Agendamento[]
 
@@ -72,7 +71,7 @@ model Servico {
   updatedAt  DateTime @updatedAt
 
   usuarioId String
-  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   agendamentos Agendamento[]
 
@@ -104,12 +103,12 @@ model Agendamento {
 }
 
 model Configuracao {
-  id           String   @id @default(cuid())
-  usuarioId    String   @unique
-  horarioInicio String  @default("08:00")
-  horarioFim   String   @default("20:00")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String   @id @default(cuid())
+  usuarioId     String   @unique
+  horarioInicio String   @default("08:00")
+  horarioFim    String   @default("20:00")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
@@ -135,15 +134,15 @@ model TokenRecuperacao {
 }
 
 model CodigoVerificacao {
-  id        String   @id @default(cuid())
-  email     String
-  codigo    String
-  nome      String
-  senhaHash String
-  expiraEm  DateTime
-  tentativas Int    @default(0)
-  ip        String?
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  email      String
+  codigo     String
+  nome       String
+  senhaHash  String
+  expiraEm   DateTime
+  tentativas Int      @default(0)
+  ip         String?
+  createdAt  DateTime @default(now())
 
   @@index([email])
   @@index([codigo])
@@ -153,12 +152,12 @@ model CodigoVerificacao {
 }
 
 model TentativaLogin {
-  id          String   @id @default(cuid())
-  email       String
-  ip          String?
-  tentativas  Int      @default(0)
+  id           String    @id @default(cuid())
+  email        String
+  ip           String?
+  tentativas   Int       @default(0)
   bloqueadoAte DateTime?
-  createdAt   DateTime @default(now())
+  createdAt    DateTime  @default(now())
 
   @@index([email])
   @@index([ip])

@@ -227,10 +227,8 @@ export default function AgendaPage() {
     switch (status) {
       case "AGENDADO":
         return "bg-blue-100 text-blue-800";
-      case "CONFIRMADO":
-        return "bg-green-100 text-green-800";
       case "CONCLUIDO":
-        return "bg-purple-100 text-purple-800";
+        return "bg-green-100 text-green-800";
       case "CANCELADO":
         return "bg-red-100 text-red-800";
       case "NO_SHOW":
@@ -244,8 +242,6 @@ export default function AgendaPage() {
     switch (status) {
       case "AGENDADO":
         return "#F59E0B"; // Amarelo
-      case "CONFIRMADO":
-        return "#3B82F6"; // Azul
       case "CONCLUIDO":
         return "#10B981"; // Verde
       case "CANCELADO":
@@ -261,8 +257,6 @@ export default function AgendaPage() {
     switch (status) {
       case "AGENDADO":
         return "Agendado";
-      case "CONFIRMADO":
-        return "Confirmado";
       case "CONCLUIDO":
         return "Concluído";
       case "CANCELADO":
@@ -287,6 +281,8 @@ export default function AgendaPage() {
       start: a.dataHora,
       end: endTime.toISOString(),
       backgroundColor: getEventBackgroundColor(a.status),
+      borderColor: getEventBackgroundColor(a.status),
+      color: getEventBackgroundColor(a.status),
       extendedProps: { 
         agendamento: a,
         clienteNome: a.cliente.nome,
@@ -731,7 +727,6 @@ export default function AgendaPage() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   >
                     <option value="AGENDADO">Agendado</option>
-                    <option value="CONFIRMADO">Confirmado</option>
                     <option value="CONCLUIDO">Concluído</option>
                     <option value="NO_SHOW">Não Compareceu</option>
                   </select>
