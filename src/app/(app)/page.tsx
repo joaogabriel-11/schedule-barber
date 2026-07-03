@@ -414,6 +414,13 @@ export default function AgendaPage() {
                 if (tooltip) {
                   info.el.setAttribute('title', tooltip);
                 }
+                // Garante que o evento seja visível na visualização mensal
+                info.el.style.opacity = '1';
+                info.el.style.visibility = 'visible';
+                info.el.style.backgroundColor = info.event.backgroundColor;
+                info.el.style.borderColor = info.event.borderColor;
+                info.el.style.color = '#000000';
+                info.el.style.fontWeight = 'bold';
               }}
               eventContent={(eventInfo) => {
                 const props = eventInfo.event.extendedProps as any;

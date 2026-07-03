@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+/* FullCalendar - Garantir visibilidade de eventos na visualização mensal */
+.fc-daygrid-event {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.fc-daygrid-event:hover {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.fc-event {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
