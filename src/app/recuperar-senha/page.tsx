@@ -23,13 +23,14 @@ export default function RecuperarSenhaPage() {
         body: JSON.stringify({ email }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
         setError(data.error || "Erro ao solicitar recuperação de senha");
         return;
       }
 
-      setSuccess("Email de recuperação enviado! Verifique sua caixa de entrada.");
+      setSuccess(data.message || "Se o e-mail existir em nossa base, você receberá um link de recuperação");
       setEmail("");
     } catch (err) {
       setError("Erro ao conectar com o servidor");

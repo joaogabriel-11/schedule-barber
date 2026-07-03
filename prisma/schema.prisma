@@ -106,11 +106,14 @@ model TokenRecuperacao {
   usuarioId String
   expiraEm  DateTime
   usado     Boolean  @default(false)
+  ip        String?
   createdAt DateTime @default(now())
 
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([usuarioId])
+  @@index([ip])
+  @@index([createdAt])
   @@map("tokens_recuperacao")
 }
