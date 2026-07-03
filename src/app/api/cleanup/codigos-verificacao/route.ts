@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "../../../../../../lib/prisma";
+import { prisma } from "../../../../../lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,10 +8,7 @@ export async function POST(request: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
 
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const now = new Date();
@@ -35,7 +32,7 @@ export async function POST(request: NextRequest) {
     console.error("Erro ao limpar códigos expirados:", error);
     return NextResponse.json(
       { error: "Erro ao limpar códigos expirados" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { TrendingUp, Users, Scissors, AlertCircle } from "lucide-react";
 
 interface RelatorioData {
@@ -43,7 +51,7 @@ export default function RelatoriosPage() {
 
     try {
       const response = await fetch(
-        `/api/relatorios?inicio=${dataInicio}&fim=${dataFim}`
+        `/api/relatorios?inicio=${dataInicio}&fim=${dataFim}`,
       );
 
       if (!response.ok) {
@@ -95,7 +103,7 @@ export default function RelatoriosPage() {
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
-      currency: "BRL"
+      currency: "BRL",
     }).format(valor);
   };
 
@@ -103,12 +111,16 @@ export default function RelatoriosPage() {
     <div className="p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-gray-900">Relatórios</h1>
-        <p className="text-sm text-gray-500 mt-1">Análise de desempenho da barbearia</p>
+        <p className="text-sm text-gray-500 mt-1">
+          Análise de desempenho da barbearia
+        </p>
       </div>
 
       {/* Filtros de período */}
       <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Filtro de Período</h2>
+        <h2 className="text-lg font-medium text-gray-900 mb-4">
+          Filtro de Período
+        </h2>
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -176,7 +188,9 @@ export default function RelatoriosPage() {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center mb-2">
                 <TrendingUp size={20} className="mr-2 text-gray-600" />
-                <div className="text-sm font-medium text-gray-600">Faturamento Total</div>
+                <div className="text-sm font-medium text-gray-600">
+                  Faturamento Total
+                </div>
               </div>
               <div className="text-3xl font-semibold text-gray-900">
                 {formatarMoeda(data.faturamentoTotal)}
@@ -185,7 +199,9 @@ export default function RelatoriosPage() {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center mb-2">
                 <Users size={20} className="mr-2 text-gray-600" />
-                <div className="text-sm font-medium text-gray-600">Atendimentos</div>
+                <div className="text-sm font-medium text-gray-600">
+                  Atendimentos
+                </div>
               </div>
               <div className="text-3xl font-semibold text-gray-900">
                 {data.quantidadeAtendimentos}
@@ -194,9 +210,13 @@ export default function RelatoriosPage() {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center mb-2">
                 <AlertCircle size={20} className="mr-2 text-gray-600" />
-                <div className="text-sm font-medium text-gray-600">Taxa de No-Show/Cancelamento</div>
+                <div className="text-sm font-medium text-gray-600">
+                  Taxa de No-Show/Cancelamento
+                </div>
               </div>
-              <div className={`text-3xl font-semibold ${data.taxaNoShow > 20 ? "text-red-600" : "text-gray-900"}`}>
+              <div
+                className={`text-3xl font-semibold ${data.taxaNoShow > 20 ? "text-red-600" : "text-gray-900"}`}
+              >
                 {data.taxaNoShow.toFixed(1)}%
               </div>
             </div>
@@ -204,7 +224,9 @@ export default function RelatoriosPage() {
 
           {/* Gráfico de faturamento mensal */}
           <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Faturamento Mensal (Últimos 6 Meses)</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">
+              Faturamento Mensal (Últimos 6 Meses)
+            </h2>
             <div className="overflow-x-auto">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data.faturamentoMensal}>
@@ -212,7 +234,12 @@ export default function RelatoriosPage() {
                   <XAxis dataKey="mes" stroke="#6b7280" />
                   <YAxis stroke="#6b7280" />
                   <Tooltip
-                    formatter={(value: number | undefined) => [value ? formatarMoeda(value) : "R$ 0,00", "Faturamento"]}
+                    formatter={(value) => [
+                      typeof value === "number"
+                        ? formatarMoeda(value)
+                        : "R$ 0,00",
+                      "Faturamento",
+                    ]}
                   />
                   <Bar dataKey="valor" fill="#D97706" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -226,10 +253,14 @@ export default function RelatoriosPage() {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center mb-4">
                 <Users size={20} className="mr-2 text-gray-600" />
-                <h2 className="text-lg font-medium text-gray-900">Top 5 Clientes</h2>
+                <h2 className="text-lg font-medium text-gray-900">
+                  Top 5 Clientes
+                </h2>
               </div>
               {data.clientesRanking.length === 0 ? (
-                <p className="text-gray-500 text-sm">Nenhum cliente encontrado</p>
+                <p className="text-gray-500 text-sm">
+                  Nenhum cliente encontrado
+                </p>
               ) : (
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
@@ -245,7 +276,9 @@ export default function RelatoriosPage() {
                   <tbody className="divide-y divide-gray-200">
                     {data.clientesRanking.map((cliente, index) => (
                       <tr key={index}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{cliente.nome}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {cliente.nome}
+                        </td>
                         <td className="px-4 py-3 text-sm text-gray-900 text-right">
                           {cliente.quantidade}
                         </td>
@@ -260,10 +293,14 @@ export default function RelatoriosPage() {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="flex items-center mb-4">
                 <Scissors size={20} className="mr-2 text-gray-600" />
-                <h2 className="text-lg font-medium text-gray-900">Serviços Mais Populares</h2>
+                <h2 className="text-lg font-medium text-gray-900">
+                  Serviços Mais Populares
+                </h2>
               </div>
               {data.servicosRanking.length === 0 ? (
-                <p className="text-gray-500 text-sm">Nenhum serviço encontrado</p>
+                <p className="text-gray-500 text-sm">
+                  Nenhum serviço encontrado
+                </p>
               ) : (
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
@@ -279,7 +316,9 @@ export default function RelatoriosPage() {
                   <tbody className="divide-y divide-gray-200">
                     {data.servicosRanking.map((servico, index) => (
                       <tr key={index}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{servico.nome}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {servico.nome}
+                        </td>
                         <td className="px-4 py-3 text-sm text-gray-900 text-right">
                           {servico.quantidade}
                         </td>

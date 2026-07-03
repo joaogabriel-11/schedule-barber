@@ -12,19 +12,19 @@ function getClientIP(request: NextRequest): string {
   const forwarded = request.headers.get("x-forwarded-for");
   const realIP = request.headers.get("x-real-ip");
   const cfConnectingIP = request.headers.get("cf-connecting-ip");
-  
+
   if (forwarded) {
     return forwarded.split(",")[0].trim();
   }
-  
+
   if (realIP) {
     return realIP;
   }
-  
+
   if (cfConnectingIP) {
     return cfConnectingIP;
   }
-  
+
   return "unknown";
 }
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (!email) {
       return NextResponse.json(
         { error: "Email é obrigatório" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       console.log(`Cooldown active for email: ${email}`);
       return NextResponse.json(
         { error: "Aguarde 60 segundos antes de solicitar um novo código" },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       console.log(`Hourly limit exceeded for email: ${email}`);
       return NextResponse.json(
         { error: "Muitas tentativas. Tente novamente em 1 hora." },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     if (!existingCode) {
       return NextResponse.json(
         { error: "Nenhum cadastro pendente encontrado para este email" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     // Send email with new verification code
     try {
       await resend.emails.send({
-        from: "onboarding@resend.dev",
+        from: "noreply@joaogabriels.com",
         to: email,
         subject: "Novo Código de Verificação - Barbearia",
         html: `
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
       console.error("Erro ao enviar email:", emailError);
       return NextResponse.json(
         { error: "Erro ao enviar email de verificação" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     console.error("Erro ao reenviar código:", error);
     return NextResponse.json(
       { error: "Erro ao reenviar código" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
