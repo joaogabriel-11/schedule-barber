@@ -2,22 +2,34 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Clock } from "lucide-react";
+import { Clock, User, Mail } from "lucide-react";
 
 export default function ConfiguracoesPage() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [loadingAccount, setLoadingAccount] = useState(false);
   const [error, setError] = useState("");
+  const [accountError, setAccountError] = useState("");
   const [success, setSuccess] = useState("");
+  const [accountSuccess, setAccountSuccess] = useState("");
 
   const [formData, setFormData] = useState({
     horarioInicio: "08:00",
     horarioFim: "20:00"
   });
 
+  const [accountData, setAccountData] = useState({
+    nome: "",
+    email: ""
+  });
+
   useEffect(() => {
     if (session) {
       fetchConfiguracao();
+      setAccountData({
+        nome: session.user.name || "",
+        email: session.user.email || ""
+      });
     }
   }, [session]);
 
@@ -66,74 +78,163 @@ export default function ConfiguracoesPage() {
     }
   };
 
+  const handleAccountSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoadingAccount(true);
+    setAccountError("");
+    setAccountSuccess("");
+
+    try {
+      const response = await fetch("/api/usuario", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(accountData)
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setAccountError(data.error || "Erro ao atualizar dados da conta");
+        return;
+      }
+
+      setAccountSuccess("Dados da conta atualizados com sucesso!");
+      setTimeout(() => setAccountSuccess(""), 3000);
+    } catch (err) {
+      setAccountError("Erro ao conectar com o servidor");
+    } finally {
+      setLoadingAccount(false);
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-gray-900">Configurações</h1>
-        <p className="text-sm text-gray-500 mt-1">Configure o horário de funcionamento da barbearia</p>
+        <p className="text-sm text-gray-500 mt-1">Gerencie suas configurações e dados da conta</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-6 max-w-2xl">
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+      <div className="space-y-6 max-w-2xl">
+        {/* Account Data Section */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="flex items-center mb-4">
+            <User size={20} className="mr-2 text-gray-600" />
+            <h2 className="text-lg font-medium text-gray-900">Dados da Conta</h2>
           </div>
-        )}
-        {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
-            {success}
-          </div>
-        )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-6">
-            <div>
-              <div className="flex items-center mb-4">
-                <Clock size={20} className="mr-2 text-gray-600" />
-                <h2 className="text-lg font-medium text-gray-900">Horário de Funcionamento</h2>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Horário de Início
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={formData.horarioInicio}
-                    onChange={(e) => setFormData({ ...formData, horarioInicio: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Horário de Término
-                  </label>
-                  <input
-                    type="time"
-                    required
-                    value={formData.horarioFim}
-                    onChange={(e) => setFormData({ ...formData, horarioFim: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                </div>
-              </div>
-              <p className="text-sm text-gray-500 mt-2">
-                Esses horários serão usados para gerar os slots disponíveis ao criar agendamentos.
-              </p>
+          {accountError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+              {accountError}
             </div>
-          </div>
+          )}
+          {accountSuccess && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+              {accountSuccess}
+            </div>
+          )}
 
-          <div className="mt-6">
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 transition-colors"
-            >
-              {loading ? "Salvando..." : "Salvar Configurações"}
-            </button>
-          </div>
-        </form>
+          <form onSubmit={handleAccountSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nome
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={accountData.nome}
+                  onChange={(e) => setAccountData({ ...accountData, nome: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={accountData.email}
+                  onChange={(e) => setAccountData({ ...accountData, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <button
+                type="submit"
+                disabled={loadingAccount}
+                className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 transition-colors"
+              >
+                {loadingAccount ? "Salvando..." : "Salvar Dados da Conta"}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Business Hours Section */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+              {success}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center mb-4">
+                  <Clock size={20} className="mr-2 text-gray-600" />
+                  <h2 className="text-lg font-medium text-gray-900">Horário de Funcionamento</h2>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Horário de Início
+                    </label>
+                    <input
+                      type="time"
+                      required
+                      value={formData.horarioInicio}
+                      onChange={(e) => setFormData({ ...formData, horarioInicio: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Horário de Término
+                    </label>
+                    <input
+                      type="time"
+                      required
+                      value={formData.horarioFim}
+                      onChange={(e) => setFormData({ ...formData, horarioFim: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500 mt-2">
+                  Esses horários serão usados para gerar os slots disponíveis ao criar agendamentos.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 transition-colors"
+              >
+                {loading ? "Salvando..." : "Salvar Configurações"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

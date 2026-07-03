@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { Calendar, Users, Scissors, BarChart3, Settings, LogOut } from "lucide-react";
+import { Calendar, Users, Scissors, BarChart3, Settings, LogOut, Bell } from "lucide-react";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -11,6 +11,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -24,6 +25,37 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       router.push("/login");
     }
   }, [status, router]);
+
+  const fetchNotificationCount = async () => {
+    try {
+      const res = await fetch("/api/notificacoes", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setNotificationCount(data.length);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar notificações:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchNotificationCount();
+      // Refresh notifications every 30 seconds
+      const interval = setInterval(fetchNotificationCount, 30000);
+
+      // Listen for custom event when notifications are updated
+      const handleNotificationsUpdate = () => {
+        fetchNotificationCount();
+      };
+      window.addEventListener("notifications-updated", handleNotificationsUpdate);
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener("notifications-updated", handleNotificationsUpdate);
+      };
+    }
+  }, [status]);
 
   if (status === "loading") {
     return (
@@ -42,6 +74,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { path: "/clientes", label: "Clientes", icon: Users },
     { path: "/servicos", label: "Serviços", icon: Scissors },
     { path: "/relatorios", label: "Relatórios", icon: BarChart3 },
+    { path: "/notificacoes", label: "Notificações", icon: Bell, showBadge: true },
     { path: "/configuracoes", label: "Configurações", icon: Settings }
   ];
 
@@ -57,13 +90,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <button
                   key={item.path}
                   onClick={() => router.push(item.path)}
-                  className={`flex flex-col items-center px-3 py-2 rounded-lg ${
+                  className={`relative flex flex-col items-center px-3 py-2 rounded-lg ${
                     pathname === item.path
                       ? "text-amber-600 bg-amber-50"
                       : "text-gray-600"
                   }`}
                 >
                   <Icon size={20} />
+                  {item.showBadge && notificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {notificationCount > 9 ? "9+" : notificationCount}
+                    </span>
+                  )}
                   <span className="text-xs mt-1">{item.label}</span>
                 </button>
               );
@@ -96,7 +134,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <li key={item.path}>
                   <button
                     onClick={() => router.push(item.path)}
-                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
+                    className={`relative w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
                       pathname === item.path
                         ? "bg-amber-50 text-amber-700"
                         : "text-gray-700 hover:bg-gray-50"
@@ -104,6 +142,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   >
                     <Icon size={20} className="mr-3" />
                     <span className="font-medium">{item.label}</span>
+                    {item.showBadge && notificationCount > 0 && (
+                      <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
+                        {notificationCount > 9 ? "9+" : notificationCount}
+                      </span>
+                    )}
                   </button>
                 </li>
               );

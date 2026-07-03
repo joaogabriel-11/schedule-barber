@@ -30,6 +30,7 @@ model Usuario {
 
   agendamentos Agendamento[]
   configuracao Configuracao?
+  tokensRecuperacao TokenRecuperacao[]
 
   @@map("usuarios")
 }
@@ -97,4 +98,19 @@ model Configuracao {
   usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   @@map("configuracoes")
+}
+
+model TokenRecuperacao {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  usuarioId String
+  expiraEm  DateTime
+  usado     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([usuarioId])
+  @@map("tokens_recuperacao")
 }

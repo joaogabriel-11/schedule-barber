@@ -107,6 +107,11 @@ export default function LoginPage() {
                 Cadastre-se
               </a>
             </p>
+            <p className="text-sm text-gray-600 mt-2">
+              <a href="/recuperar-senha" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Esqueci minha senha
+              </a>
+            </p>
           </div>
         </form>
       </div>
