@@ -141,3 +141,17 @@ model CodigoVerificacao {
   @@index([createdAt])
   @@map("codigos_verificacao")
 }
+
+model TentativaLogin {
+  id          String   @id @default(cuid())
+  email       String
+  ip          String?
+  tentativas  Int      @default(0)
+  bloqueadoAte DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([email])
+  @@index([ip])
+  @@index([createdAt])
+  @@map("tentativas_login")
+}

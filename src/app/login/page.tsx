@@ -13,6 +13,7 @@ export default function LoginPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +28,13 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Email ou senha inválidos");
+        const errorMessage = result.error || "Email ou senha inválidos";
+        setError(errorMessage);
+        
+        // Check if error message indicates rate limit block
+        if (errorMessage.includes("Muitas tentativas") || errorMessage.includes("minutos")) {
+          setIsBlocked(true);
+        }
         return;
       }
 
@@ -93,10 +100,10 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || isBlocked}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-400`}
             >
-              {loading ? "Entrando..." : "Entrar"}
+              {loading ? "Entrando..." : isBlocked ? "Bloqueado temporariamente" : "Entrar"}
             </button>
           </div>
 

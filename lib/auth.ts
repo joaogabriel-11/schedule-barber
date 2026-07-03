@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
+import { checkLoginRateLimit, recordFailedLoginAttempt, resetLoginAttempts } from "./login-rate-limit";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -13,7 +14,14 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error("Email e senha são obrigatórios");
+        }
+
+        // Check rate limit
+        const rateLimitCheck = await checkLoginRateLimit(credentials.email);
+        
+        if (!rateLimitCheck.allowed) {
+          throw new Error(rateLimitCheck.error);
         }
 
         const usuario = await prisma.usuario.findUnique({
@@ -21,7 +29,8 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!usuario) {
-          return null;
+          await recordFailedLoginAttempt(credentials.email);
+          throw new Error("Credenciais inválidas");
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -30,8 +39,12 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isPasswordValid) {
-          return null;
+          await recordFailedLoginAttempt(credentials.email);
+          throw new Error("Credenciais inválidas");
         }
+
+        // Reset login attempts on successful login
+        await resetLoginAttempts(credentials.email);
 
         return {
           id: usuario.id,
