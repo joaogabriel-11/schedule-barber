@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { TrendingUp, Users, Scissors, AlertCircle } from "lucide-react";
 
 interface RelatorioData {
   faturamentoTotal: number;
@@ -100,10 +101,13 @@ export default function RelatoriosPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Relatórios</h1>
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900">Relatórios</h1>
+        <p className="text-sm text-gray-500 mt-1">Análise de desempenho da barbearia</p>
+      </div>
 
       {/* Filtros de período */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
         <h2 className="text-lg font-medium text-gray-900 mb-4">Filtro de Período</h2>
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <div className="flex-1">
@@ -114,7 +118,7 @@ export default function RelatoriosPage() {
               type="date"
               value={dataInicio}
               onChange={(e) => setDataInicio(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
             />
           </div>
           <div className="flex-1">
@@ -125,32 +129,32 @@ export default function RelatoriosPage() {
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
             />
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setPeriodo("hoje")}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
           >
             Hoje
           </button>
           <button
             onClick={() => setPeriodo("este_mes")}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
           >
             Este Mês
           </button>
           <button
             onClick={() => setPeriodo("mes_passado")}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
           >
             Mês Passado
           </button>
           <button
             onClick={() => setPeriodo("ultimos_30_dias")}
-            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
           >
             Últimos 30 Dias
           </button>
@@ -169,39 +173,48 @@ export default function RelatoriosPage() {
         <div className="space-y-6">
           {/* Cards de métricas principais */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600 mb-2">Faturamento Total</div>
-              <div className="text-3xl font-bold text-green-600">
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="flex items-center mb-2">
+                <TrendingUp size={20} className="mr-2 text-gray-600" />
+                <div className="text-sm font-medium text-gray-600">Faturamento Total</div>
+              </div>
+              <div className="text-3xl font-semibold text-gray-900">
                 {formatarMoeda(data.faturamentoTotal)}
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600 mb-2">Atendimentos</div>
-              <div className="text-3xl font-bold text-indigo-600">
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="flex items-center mb-2">
+                <Users size={20} className="mr-2 text-gray-600" />
+                <div className="text-sm font-medium text-gray-600">Atendimentos</div>
+              </div>
+              <div className="text-3xl font-semibold text-gray-900">
                 {data.quantidadeAtendimentos}
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600 mb-2">Taxa de No-Show/Cancelamento</div>
-              <div className={`text-3xl font-bold ${data.taxaNoShow > 20 ? "text-red-600" : "text-green-600"}`}>
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="flex items-center mb-2">
+                <AlertCircle size={20} className="mr-2 text-gray-600" />
+                <div className="text-sm font-medium text-gray-600">Taxa de No-Show/Cancelamento</div>
+              </div>
+              <div className={`text-3xl font-semibold ${data.taxaNoShow > 20 ? "text-red-600" : "text-gray-900"}`}>
                 {data.taxaNoShow.toFixed(1)}%
               </div>
             </div>
           </div>
 
           {/* Gráfico de faturamento mensal */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Faturamento Mensal (Últimos 6 Meses)</h2>
             <div className="overflow-x-auto">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data.faturamentoMensal}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="mes" />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="mes" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
                   <Tooltip
-                    formatter={(value: number) => [formatarMoeda(value), "Faturamento"]}
+                    formatter={(value: number | undefined) => [value ? formatarMoeda(value) : "R$ 0,00", "Faturamento"]}
                   />
-                  <Bar dataKey="valor" fill="#4F46E5" />
+                  <Bar dataKey="valor" fill="#D97706" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -210,8 +223,11 @@ export default function RelatoriosPage() {
           {/* Rankings */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Top 5 Clientes */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Top 5 Clientes</h2>
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="flex items-center mb-4">
+                <Users size={20} className="mr-2 text-gray-600" />
+                <h2 className="text-lg font-medium text-gray-900">Top 5 Clientes</h2>
+              </div>
               {data.clientesRanking.length === 0 ? (
                 <p className="text-gray-500 text-sm">Nenhum cliente encontrado</p>
               ) : (
@@ -241,8 +257,11 @@ export default function RelatoriosPage() {
             </div>
 
             {/* Serviços Mais Populares */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Serviços Mais Populares</h2>
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="flex items-center mb-4">
+                <Scissors size={20} className="mr-2 text-gray-600" />
+                <h2 className="text-lg font-medium text-gray-900">Serviços Mais Populares</h2>
+              </div>
               {data.servicosRanking.length === 0 ? (
                 <p className="text-gray-500 text-sm">Nenhum serviço encontrado</p>
               ) : (

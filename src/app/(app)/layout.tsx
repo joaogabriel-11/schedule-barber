@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
+import { Calendar, Users, Scissors, BarChart3, Settings, LogOut } from "lucide-react";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -37,38 +38,41 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   const navItems = [
-    { path: "/", label: "Agenda", icon: "📅" },
-    { path: "/clientes", label: "Clientes", icon: "👥" },
-    { path: "/servicos", label: "Serviços", icon: "✂️" },
-    { path: "/relatorios", label: "Relatórios", icon: "📊" },
-    { path: "/configuracoes", label: "Configurações", icon: "⚙️" }
+    { path: "/", label: "Agenda", icon: Calendar },
+    { path: "/clientes", label: "Clientes", icon: Users },
+    { path: "/servicos", label: "Serviços", icon: Scissors },
+    { path: "/relatorios", label: "Relatórios", icon: BarChart3 },
+    { path: "/configuracoes", label: "Configurações", icon: Settings }
   ];
 
   if (isMobile) {
     return (
-      <div className="min-h-screen flex flex-col pb-16">
+      <div className="min-h-screen flex flex-col pb-16 bg-gray-50">
         <main className="flex-1">{children}</main>
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-2">
           <div className="flex justify-around">
-            {navItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => router.push(item.path)}
-                className={`flex flex-col items-center px-4 py-2 rounded-lg ${
-                  pathname === item.path
-                    ? "text-indigo-600 bg-indigo-50"
-                    : "text-gray-600"
-                }`}
-              >
-                <span className="text-xl">{item.icon}</span>
-                <span className="text-xs mt-1">{item.label}</span>
-              </button>
-            ))}
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => router.push(item.path)}
+                  className={`flex flex-col items-center px-3 py-2 rounded-lg ${
+                    pathname === item.path
+                      ? "text-amber-600 bg-amber-50"
+                      : "text-gray-600"
+                  }`}
+                >
+                  <Icon size={20} />
+                  <span className="text-xs mt-1">{item.label}</span>
+                </button>
+              );
+            })}
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="flex flex-col items-center px-4 py-2 rounded-lg text-gray-600"
+              className="flex flex-col items-center px-3 py-2 rounded-lg text-gray-600"
             >
-              <span className="text-xl">🚪</span>
+              <LogOut size={20} />
               <span className="text-xs mt-1">Sair</span>
             </button>
           </div>
@@ -78,37 +82,40 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-gray-50">
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full">
         <div className="p-6 border-b border-gray-200">
           <h1 className="text-xl font-bold text-gray-900">Barbearia</h1>
-          <p className="text-sm text-gray-600 mt-1">{session.user.name}</p>
+          <p className="text-sm text-gray-500 mt-1">{session.user.name}</p>
         </div>
         <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {navItems.map((item) => (
-              <li key={item.path}>
-                <button
-                  onClick={() => router.push(item.path)}
-                  className={`w-full flex items-center px-4 py-3 rounded-lg ${
-                    pathname === item.path
-                      ? "bg-indigo-50 text-indigo-600"
-                      : "text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  <span className="text-xl mr-3">{item.icon}</span>
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              </li>
-            ))}
+          <ul className="space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <li key={item.path}>
+                  <button
+                    onClick={() => router.push(item.path)}
+                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
+                      pathname === item.path
+                        ? "bg-amber-50 text-amber-700"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <Icon size={20} className="mr-3" />
+                    <span className="font-medium">{item.label}</span>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
         <div className="p-4 border-t border-gray-200">
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="w-full flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50"
+            className="w-full flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
           >
-            <span className="text-xl mr-3">🚪</span>
+            <LogOut size={20} className="mr-3" />
             <span className="font-medium">Sair</span>
           </button>
         </div>

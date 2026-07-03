@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Plus, Search, Edit2, Trash2 } from "lucide-react";
 
 interface Cliente {
   id: string;
@@ -116,23 +117,34 @@ export default function ClientesPage() {
 
   return (
     <div className="p-6">
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
-        <input
-          type="text"
-          placeholder="Buscar por nome ou telefone..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Clientes</h1>
+          <p className="text-sm text-gray-500 mt-1">Gerencie seus clientes</p>
+        </div>
         <button
           onClick={handleCreate}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
         >
+          <Plus size={18} className="mr-2" />
           Novo Cliente
         </button>
       </div>
 
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="mb-6">
+        <div className="relative">
+          <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Buscar por nome ou telefone..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+          />
+        </div>
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -176,15 +188,17 @@ export default function ClientesPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleEdit(cliente)}
-                        className="text-indigo-600 hover:text-indigo-900 mr-4"
+                        className="text-gray-600 hover:text-gray-900 mr-4"
+                        title="Editar"
                       >
-                        Editar
+                        <Edit2 size={16} />
                       </button>
                       <button
                         onClick={() => handleDelete(cliente.id)}
                         className="text-red-600 hover:text-red-900"
+                        title="Desativar"
                       >
-                        Desativar
+                        <Trash2 size={16} />
                       </button>
                     </td>
                   </tr>
@@ -196,9 +210,9 @@ export default function ClientesPage() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
               {editingCliente ? "Editar Cliente" : "Novo Cliente"}
             </h2>
             {error && (
@@ -209,7 +223,7 @@ export default function ClientesPage() {
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nome *
                   </label>
                   <input
@@ -219,11 +233,11 @@ export default function ClientesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, nome: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Telefone *
                   </label>
                   <input
@@ -233,11 +247,11 @@ export default function ClientesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, telefone: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Email
                   </label>
                   <input
@@ -246,7 +260,7 @@ export default function ClientesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
               </div>
@@ -254,14 +268,14 @@ export default function ClientesPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 transition-colors"
                 >
                   {loading ? "Salvando..." : "Salvar"}
                 </button>

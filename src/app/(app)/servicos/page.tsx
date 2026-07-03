@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Plus, Edit2, Trash2 } from "lucide-react";
 
 interface Servico {
   id: string;
@@ -108,16 +109,21 @@ export default function ServicosPage() {
 
   return (
     <div className="p-6">
-      <div className="mb-6 flex justify-end">
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Serviços</h1>
+          <p className="text-sm text-gray-500 mt-1">Gerencie seus serviços</p>
+        </div>
         <button
           onClick={handleCreate}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
         >
+          <Plus size={18} className="mr-2" />
           Novo Serviço
         </button>
       </div>
 
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -167,15 +173,17 @@ export default function ServicosPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleEdit(servico)}
-                        className="text-indigo-600 hover:text-indigo-900 mr-4"
+                        className="text-gray-600 hover:text-gray-900 mr-4"
+                        title="Editar"
                       >
-                        Editar
+                        <Edit2 size={16} />
                       </button>
                       <button
                         onClick={() => handleDelete(servico.id)}
                         className="text-red-600 hover:text-red-900"
+                        title="Desativar"
                       >
-                        Desativar
+                        <Trash2 size={16} />
                       </button>
                     </td>
                   </tr>
@@ -187,9 +195,9 @@ export default function ServicosPage() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
               {editingServico ? "Editar Serviço" : "Novo Serviço"}
             </h2>
             {error && (
@@ -200,7 +208,7 @@ export default function ServicosPage() {
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nome *
                   </label>
                   <input
@@ -210,11 +218,11 @@ export default function ServicosPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, nome: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Descrição
                   </label>
                   <textarea
@@ -223,11 +231,11 @@ export default function ServicosPage() {
                       setFormData({ ...formData, descricao: e.target.value })
                     }
                     rows={3}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Preço (R$) *
                   </label>
                   <input
@@ -239,11 +247,11 @@ export default function ServicosPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, preco: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Duração (minutos) *
                   </label>
                   <input
@@ -254,7 +262,7 @@ export default function ServicosPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, duracaoMin: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
               </div>
@@ -262,14 +270,14 @@ export default function ServicosPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                  className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 transition-colors"
                 >
                   {loading ? "Salvando..." : "Salvar"}
                 </button>
