@@ -12,13 +12,11 @@ export async function GET(request: NextRequest) {
   try {
     const now = new Date();
 
-    // Fetch appointments that are past their end time and still have AGENDADO or CONFIRMED status
+    // Fetch appointments that are past their end time and still have AGENDADO status
     const agendamentos = await prisma.agendamento.findMany({
       where: {
         usuarioId: session.user.id,
-        status: {
-          in: ["AGENDADO", "CONFIRMADO"],
-        },
+        status: "AGENDADO",
       },
       include: {
         cliente: true,

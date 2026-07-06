@@ -15,11 +15,13 @@ export async function POST(request: NextRequest) {
 
     const now = new Date();
 
-    // Find verification code
+    // Find latest pending verification code for this email
     const verificacao = await prisma.codigoVerificacao.findFirst({
       where: {
         email,
-        codigo,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
@@ -50,16 +52,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Increment attempt count
-    await prisma.codigoVerificacao.update({
-      where: { id: verificacao.id },
-      data: {
-        tentativas: verificacao.tentativas + 1,
-      },
-    });
-
-    // Check if code matches (after incrementing attempt)
     if (verificacao.codigo !== codigo) {
+      const novasTentativas = verificacao.tentativas + 1;
+
+      if (novasTentativas >= 5) {
+        await prisma.codigoVerificacao.delete({
+          where: { id: verificacao.id },
+        });
+        return NextResponse.json(
+          { error: "Muitas tentativas incorretas. Solicite um novo código." },
+          { status: 400 }
+        );
+      }
+
+      await prisma.codigoVerificacao.update({
+        where: { id: verificacao.id },
+        data: {
+          tentativas: novasTentativas,
+        },
+      });
+
       return NextResponse.json(
         { error: "Código incorreto" },
         { status: 400 }
