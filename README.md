@@ -1,8 +1,8 @@
 <div align="center">
 
-# 💈 Barbearia — Sistema de Agendamento
+# 💈 Barbershop — Appointment Scheduling System
 
-### Sistema completo de gestão para barbearias, desenvolvido com **Next.js**, **Prisma**, **PostgreSQL** e **TypeScript**
+### Complete barbershop management system built with **Next.js**, **Prisma**, **PostgreSQL** and **TypeScript**
 
 <br/>
 
@@ -26,152 +26,154 @@
 
 <br/>
 
-_Um sistema real de agendamento criado para resolver um problema real: substituir a agenda de papel de uma barbearia, eliminando esquecimentos de clientes e conflitos de horário._
+<img width="1890" height="916" alt="barbearia" src="https://github.com/user-attachments/assets/e4edb720-d45f-4905-9d87-2a9eb87eb914" />
+
+_A real-world appointment scheduling system built to solve a real problem: replacing a paper appointment book in a barbershop, eliminating forgotten clients and scheduling conflicts._
 
 </div>
 
 ---
 
-# 📖 Sobre o projeto
+# 📖 About the Project
 
-O **Barbearia** nasceu de um problema concreto: um barbeiro que controlava seus agendamentos manualmente em uma agenda de papel, o que causava esquecimentos de clientes e, ocasionalmente, dois clientes marcados no mesmo horário.
+**Barbershop** was born from a real problem: a barber who managed appointments manually using a paper appointment book, leading to forgotten clients and, occasionally, two clients being scheduled for the same time slot.
 
-O sistema foi construído para resolver isso de ponta a ponta — com agenda visual, validação automática de conflito de horário, autenticação segura, relatórios de faturamento e um painel administrativo completo.
+The system was built to solve this problem end-to-end—with a visual calendar, automatic scheduling conflict validation, secure authentication, revenue reports, and a complete administrative dashboard.
 
-O projeto foi desenvolvido com foco em:
+The project was developed with a focus on:
 
-- Regras de negócio bem definidas (a validação de conflito de horário é o núcleo do sistema)
-- Segurança em profundidade (verificação de email, rate limiting, recuperação de senha)
-- Experiência responsiva (uso real no balcão da barbearia, via celular)
-- Arquitetura escalável com Next.js App Router
-
----
-
-# ✨ Funcionalidades
-
-## 📅 Gestão de Agendamentos
-
-- Calendário interativo (visão mensal, semanal e diária)
-- Validação automática de conflito de horário na criação e edição
-- Status do agendamento: `AGENDADO`, `CONCLUIDO`, `CANCELADO`, `NO_SHOW`
-- Slots de horário fixos de 10 em 10 minutos, respeitando o horário de funcionamento configurado
-- Visão de lista otimizada para mobile
-
-## 👥 Clientes e Serviços
-
-- Cadastro completo de clientes (nome, telefone, email)
-- Cadastro de serviços (nome, preço, duração)
-- Exclusão via soft-delete, preservando histórico de agendamentos
-
-## 🔐 Autenticação e Segurança
-
-- Login com **NextAuth** (JWT)
-- Verificação de email no cadastro via código de 6 dígitos
-- Recuperação de senha por email com token de expiração
-- Rate limiting contra spam e brute force (login, cadastro e recuperação de senha)
-- Senhas armazenadas com hash **bcrypt**
-- Controle de acesso por papéis (`BARBEIRO`, `ADMIN`)
-
-## 🛠 Painel Administrativo
-
-- Listagem de todos os usuários do sistema
-- Edição de nome, email e senha de qualquer usuário
-- Exclusão de contas
-- Acesso restrito exclusivamente a usuários `ADMIN`, validado no backend
-
-## 📊 Relatórios e Analytics
-
-- Faturamento total por período selecionado
-- Quantidade de atendimentos concluídos
-- Taxa de no-show / cancelamento
-- Gráfico de faturamento dos últimos 6 meses
-- Ranking dos 5 clientes com mais atendimentos
-- Ranking dos serviços mais populares
-
-## 🔔 Notificações
-
-- Alerta automático para agendamentos que já passaram da data e continuam sem status atualizado
-- Atualização rápida de status diretamente pela notificação
+- Well-defined business rules (appointment conflict validation is the core of the system)
+- Defense-in-depth security (email verification, rate limiting, password recovery)
+- Responsive user experience (real-world usage at the barbershop counter via mobile devices)
+- Scalable architecture using Next.js App Router
 
 ---
 
-# 🛠 Stack Tecnológica
+# ✨ Features
+
+## 📅 Appointment Management
+
+- Interactive calendar (monthly, weekly, and daily views)
+- Automatic scheduling conflict validation during creation and editing
+- Appointment statuses: `SCHEDULED`, `COMPLETED`, `CANCELED`, `NO_SHOW`
+- Fixed 10-minute time slots respecting configured business hours
+- Mobile-optimized list view
+
+## 👥 Clients and Services
+
+- Complete client registration (name, phone, email)
+- Service management (name, price, duration)
+- Soft-delete support, preserving appointment history
+
+## 🔐 Authentication and Security
+
+- Authentication with **NextAuth** (JWT)
+- Email verification during registration using a 6-digit code
+- Password recovery via email with expiring tokens
+- Rate limiting against spam and brute-force attacks (login, registration, and password recovery)
+- Passwords securely hashed with **bcrypt**
+- Role-based access control (`BARBER`, `ADMIN`)
+
+## 🛠 Administrative Dashboard
+
+- List all system users
+- Edit any user's name, email, and password
+- Delete user accounts
+- Backend-enforced access restricted exclusively to `ADMIN` users
+
+## 📊 Reports and Analytics
+
+- Total revenue for a selected period
+- Number of completed appointments
+- No-show / cancellation rate
+- Revenue chart for the last 6 months
+- Top 5 clients by completed appointments
+- Most popular services ranking
+
+## 🔔 Notifications
+
+- Automatic alerts for appointments whose scheduled time has passed without a status update
+- Quick status updates directly from the notification
+
+---
+
+# 🛠 Technology Stack
 
 ### Frontend
 
-| Tecnologia              | Descrição               |
-| ----------------------- | ----------------------- |
-| Next.js 16 (App Router) | Framework React         |
-| React 19                | Biblioteca de UI        |
-| TypeScript              | Tipagem estática        |
-| Tailwind CSS 4          | Estilização             |
-| FullCalendar            | Calendário interativo   |
-| Recharts                | Gráficos dos relatórios |
-| Lucide React            | Ícones                  |
+| Technology              | Description          |
+| ----------------------- | -------------------- |
+| Next.js 16 (App Router) | React Framework      |
+| React 19                | UI Library           |
+| TypeScript              | Static Typing        |
+| Tailwind CSS 4          | Styling              |
+| FullCalendar            | Interactive Calendar |
+| Recharts                | Reporting Charts     |
+| Lucide React            | Icons                |
 
 ### Backend
 
-| Tecnologia            | Descrição                     |
+| Technology            | Description                   |
 | --------------------- | ----------------------------- |
-| Next.js API Routes    | Rotas de API serverless       |
-| Prisma ORM            | Camada de acesso ao banco     |
-| PostgreSQL (Supabase) | Banco de dados relacional     |
-| NextAuth (Auth.js)    | Autenticação e sessão JWT     |
-| bcryptjs              | Hash de senhas                |
-| Resend                | Envio de emails transacionais |
+| Next.js API Routes    | Serverless API Routes         |
+| Prisma ORM            | Database Access Layer         |
+| PostgreSQL (Supabase) | Relational Database           |
+| NextAuth (Auth.js)    | Authentication & JWT Sessions |
+| bcryptjs              | Password Hashing              |
+| Resend                | Transactional Email Delivery  |
 
-### Qualidade e Infraestrutura
+### Quality & Infrastructure
 
-| Tecnologia | Descrição              |
-| ---------- | ---------------------- |
-| Vitest     | Testes unitários       |
-| ESLint     | Padronização de código |
-| Vercel     | Deploy e hospedagem    |
-| Cloudflare | DNS e domínio próprio  |
-
----
-
-# 📊 Modelagem do Banco de Dados
-
-### Modelos principais
-
-**Usuario** — id, email, nome, senha (hash), role (`BARBEIRO` / `ADMIN`)
-**Cliente** — id, nome, telefone, email, ativo
-**Servico** — id, nome, descrição, preço, duração (min), ativo
-**Agendamento** — id, dataHora, status, observações — relacionado a Usuario, Cliente e Servico
-**Configuracao** — horário de início e fim de funcionamento, por usuário
-
-### Modelos de segurança
-
-**TokenRecuperacao** — token de recuperação de senha, com expiração e IP de origem
-**CodigoVerificacao** — código de verificação de cadastro, com controle de tentativas
-**TentativaLogin** — controle de rate limiting no login
+| Technology | Description          |
+| ---------- | -------------------- |
+| Vitest     | Unit Testing         |
+| ESLint     | Code Standardization |
+| Vercel     | Deployment & Hosting |
+| Cloudflare | DNS & Custom Domain  |
 
 ---
 
-# 🔐 Segurança em detalhe
+# 📊 Database Modeling
 
-### Fluxo de cadastro com verificação de email
+### Main Models
 
-1. Usuário preenche nome, email e senha
-2. Sistema valida se o email já está em uso
-3. Um código de 6 dígitos é gerado e enviado por email (Resend)
-4. Usuário confirma o código no app
-5. Conta só é criada de fato após validação bem-sucedida
+**User** — id, email, name, password (hash), role (`BARBER` / `ADMIN`)
+**Client** — id, name, phone, email, active
+**Service** — id, name, description, price, duration (min), active
+**Appointment** — id, dateTime, status, notes — related to User, Client, and Service
+**Configuration** — business opening and closing hours, per user
 
-### Rate limiting
+### Security Models
 
-- **Login**: até 5 tentativas, bloqueio de 15 minutos após exceder
-- **Cadastro / reenvio de código**: 1 solicitação a cada 60s, máximo de 5 por hora por email
-- **Recuperação de senha**: limite por email e por IP, com resposta sempre genérica (evita enumeração de contas cadastradas)
-
-### Regra de negócio central: conflito de horário
-
-Dois agendamentos conflitam se `inícioA < fimB` **e** `fimA > inícioB`. Essa lógica é isolada em uma função pura e testada unitariamente, validada tanto na criação quanto na edição de agendamentos.
+**PasswordRecoveryToken** — password recovery token with expiration and source IP
+**VerificationCode** — registration verification code with attempt tracking
+**LoginAttempt** — login rate-limiting control
 
 ---
 
-# 🗂️ Estrutura do Projeto
+# 🔐 Security Details
+
+### Registration Flow with Email Verification
+
+1. User enters their name, email, and password
+2. The system validates whether the email is already in use
+3. A 6-digit code is generated and sent via email (Resend)
+4. The user confirms the code in the application
+5. The account is created only after successful verification
+
+### Rate Limiting
+
+- **Login**: up to 5 attempts, 15-minute lockout after exceeding the limit
+- **Registration / code resend**: 1 request every 60 seconds, maximum of 5 per hour per email
+- **Password recovery**: rate limited by email and IP, always returning a generic response (prevents account enumeration)
+
+### Core Business Rule: Appointment Conflict Detection
+
+Two appointments conflict if `startA < endB` **and** `endA > startB`. This logic is isolated in a pure function and covered by unit tests, being validated during both appointment creation and editing.
+
+---
+
+# 🗂️ Project Structure
 
 ```text
 schedule-barber/
@@ -179,42 +181,42 @@ schedule-barber/
 │   └── schema.prisma
 ├── src/
 │   ├── app/
-│   │   ├── (app)/              # Layout com sidebar
+│   │   ├── (app)/              # Layout with sidebar
 │   │   │   ├── admin/
-│   │   │   ├── agendamentos/
-│   │   │   ├── clientes/
-│   │   │   ├── configuracoes/
-│   │   │   ├── relatorios/
-│   │   │   └── servicos/
+│   │   │   ├── appointments/
+│   │   │   ├── clients/
+│   │   │   ├── settings/
+│   │   │   ├── reports/
+│   │   │   └── services/
 │   │   ├── api/
 │   │   │   ├── auth/
-│   │   │   ├── cadastro/
-│   │   │   ├── recuperar-senha/
+│   │   │   ├── register/
+│   │   │   ├── password-recovery/
 │   │   │   ├── cleanup/
 │   │   │   └── admin/
-│   │   ├── cadastro/
+│   │   ├── register/
 │   │   ├── login/
 │   │   └── layout.tsx
 │   └── lib/
 │       ├── auth.ts
 │       ├── auth-helper.ts
 │       ├── login-rate-limit.ts
-│       ├── validarConflito.ts
+│       ├── validateConflict.ts
 │       └── prisma.ts
 └── public/
 ```
 
 ---
 
-# 🚀 Como executar localmente
+# 🚀 Running Locally
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js 20+
-- PostgreSQL (local ou Supabase)
-- Conta no [Resend](https://resend.com) para envio de emails
+- PostgreSQL (local or Supabase)
+- A [Resend](https://resend.com) account for email delivery
 
-### Instalação
+### Installation
 
 ```bash
 git clone https://github.com/joaogabriel-11/schedule-barber.git
@@ -222,34 +224,34 @@ cd schedule-barber
 npm install
 ```
 
-### Variáveis de ambiente
+### Environment Variables
 
-Crie um arquivo `.env` na raiz com:
+Create a `.env` file in the project root:
 
 ```env
 DATABASE_URL="postgresql://..."
-NEXTAUTH_SECRET="sua-chave-secreta"
+NEXTAUTH_SECRET="your-secret-key"
 NEXTAUTH_URL="http://localhost:3000"
 RESEND_API_KEY="re_..."
-CRON_SECRET="sua-chave-cron"
+CRON_SECRET="your-cron-secret"
 ```
 
-### Banco de dados
+### Database
 
 ```bash
 npx prisma db push
 npx prisma generate
 ```
 
-### Rodar em desenvolvimento
+### Start Development Server
 
 ```bash
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000)
 
-### Testes
+### Tests
 
 ```bash
 npm test
@@ -257,57 +259,57 @@ npm test
 
 ---
 
-# 🧹 Manutenção de dados
+# 🧹 Data Maintenance
 
-O sistema conta com rotinas de limpeza para evitar acúmulo de dados temporários:
+The system includes cleanup routines to prevent temporary data accumulation:
 
-- Remoção de códigos de verificação expirados
-- Remoção de tentativas de login antigas (mais de 1 semana)
+- Removal of expired verification codes
+- Removal of old login attempts (older than 1 week)
 
 ```bash
 curl -X POST https://barbearia.joaogabriels.com/api/cleanup/codigos-verificacao \
   -H "Authorization: Bearer $CRON_SECRET"
 ```
 
-Recomenda-se agendar essas rotinas via cron job (ex: a cada hora).
+It is recommended to schedule these routines using a cron job (e.g., every hour).
 
 ---
 
-# 📱 Responsividade
+# 📱 Responsiveness
 
-O sistema foi construído mobile-first, pensando no uso real do barbeiro no balcão:
+The system was built mobile-first, considering real-world usage at the barber's counter:
 
-- **Desktop**: sidebar lateral fixa, calendário completo
-- **Tablet**: sidebar adaptável
-- **Mobile**: navegação inferior, visão de agenda em lista
-
----
-
-# 🎨 Identidade Visual
-
-| Cor       | Uso                          |
-| --------- | ---------------------------- |
-| `#1a1a1a` | Cor primária (preto/grafite) |
-| `#c9a227` | Cor de destaque (dourado)    |
-| `#f5f0e6` | Fundo (bege claro)           |
-
-Tipografia: Geist Sans · Ícones: Lucide React
+- **Desktop**: fixed sidebar with full calendar
+- **Tablet**: adaptive sidebar
+- **Mobile**: bottom navigation with list-based appointment view
 
 ---
 
-# 🎯 Objetivos do projeto
+# 🎨 Visual Identity
 
-Este projeto foi desenvolvido para consolidar conhecimento prático em:
+| Color     | Usage                          |
+| --------- | ------------------------------ |
+| `#1a1a1a` | Primary color (black/graphite) |
+| `#c9a227` | Accent color (gold)            |
+| `#f5f0e6` | Background (light beige)       |
 
-- Modelagem de banco de dados relacional com regras de negócio reais
-- Autenticação e segurança de aplicações web (rate limiting, verificação de identidade, controle de acesso)
-- Arquitetura full-stack com Next.js App Router
-- Validação de regras críticas com testes automatizados
-- Deploy e configuração de infraestrutura (DNS, domínio próprio, email transacional)
+Typography: Geist Sans · Icons: Lucide React
 
 ---
 
-# 👨‍💻 Autor
+# 🎯 Project Goals
+
+This project was developed to strengthen practical knowledge in:
+
+- Relational database modeling with real-world business rules
+- Web application authentication and security (rate limiting, identity verification, access control)
+- Full-stack architecture with Next.js App Router
+- Validation of critical business rules through automated testing
+- Deployment and infrastructure configuration (DNS, custom domain, transactional email)
+
+---
+
+# 👨‍💻 Author
 
 **João Gabriel dos Santos**
 
@@ -318,6 +320,6 @@ Este projeto foi desenvolvido para consolidar conhecimento prático em:
 
 <div align="center">
 
-### ⭐ Se você gostou deste projeto, deixe uma estrela no repositório!
+### ⭐ If you liked this project, consider giving the repository a star!
 
 </div>
