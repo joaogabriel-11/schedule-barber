@@ -27,5 +27,13 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/clientes", "/servicos", "/", "/agenda"],
+  matcher: [
+    "/",
+    "/admin/:path*",
+    "/clientes/:path*",
+    "/configuracoes/:path*",
+    "/notificacoes/:path*",
+    "/relatorios/:path*",
+    "/servicos/:path*",
+  ],
 };

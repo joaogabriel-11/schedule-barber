@@ -2,6 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import { getAuthenticatedSession } from "../../../../lib/auth-helper";
 
+function validarServico(preco: unknown, duracaoMin: unknown) {
+  const precoNumero = Number(preco);
+  const duracaoNumero = Number(duracaoMin);
+
+  if (!Number.isFinite(precoNumero) || precoNumero < 0) {
+    return { error: "Preco deve ser um numero maior ou igual a zero" };
+  }
+
+  if (
+    !Number.isInteger(duracaoNumero) ||
+    duracaoNumero <= 0 ||
+    duracaoNumero > 1440
+  ) {
+    return { error: "Duracao deve ser um numero inteiro entre 1 e 1440 minutos" };
+  }
+
+  return {
+    preco: precoNumero,
+    duracaoMin: duracaoNumero
+  };
+}
+
 export async function GET(request: NextRequest) {
   const session = await getAuthenticatedSession(request);
   
@@ -36,9 +58,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { nome, descricao, preco, duracaoMin } = body;
 
-    if (!nome || !preco || !duracaoMin) {
+    if (!nome || preco === undefined || duracaoMin === undefined) {
       return NextResponse.json(
         { error: "Nome, preço e duração são obrigatórios" },
+        { status: 400 }
+      );
+    }
+
+    const dadosValidados = validarServico(preco, duracaoMin);
+
+    if ("error" in dadosValidados) {
+      return NextResponse.json(
+        { error: dadosValidados.error },
         { status: 400 }
       );
     }
@@ -47,8 +78,8 @@ export async function POST(request: NextRequest) {
       data: {
         nome,
         descricao: descricao || null,
-        preco: parseFloat(preco),
-        duracaoMin: parseInt(duracaoMin),
+        preco: dadosValidados.preco,
+        duracaoMin: dadosValidados.duracaoMin,
         usuarioId: session.user.id
       }
     });

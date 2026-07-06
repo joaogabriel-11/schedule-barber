@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import { getAuthenticatedSession } from "../../../../lib/auth-helper";
+import {
+  formatarTelefone,
+  normalizarEmailCliente,
+  validarEmailCliente,
+  validarTelefone,
+} from "../../../../lib/validarCliente";
 
 export async function GET(request: NextRequest) {
   const session = await getAuthenticatedSession(request);
@@ -57,11 +63,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!validarTelefone(telefone)) {
+      return NextResponse.json(
+        { error: "Telefone deve ter DDD e 10 ou 11 digitos" },
+        { status: 400 }
+      );
+    }
+
+    if (!validarEmailCliente(email)) {
+      return NextResponse.json(
+        { error: "Email invalido" },
+        { status: 400 }
+      );
+    }
+
     const cliente = await prisma.cliente.create({
       data: {
-        nome,
-        telefone,
-        email: email || null,
+        nome: nome.trim(),
+        telefone: formatarTelefone(telefone),
+        email: normalizarEmailCliente(email),
         usuarioId: session.user.id
       }
     });

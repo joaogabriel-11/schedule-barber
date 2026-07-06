@@ -10,6 +10,37 @@ interface Cliente {
   email: string | null;
 }
 
+function formatarTelefoneInput(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits;
+  }
+
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function telefoneValido(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length === 10 || digits.length === 11;
+}
+
+function emailValido(value: string) {
+  if (!value.trim()) {
+    return true;
+  }
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
 export default function ClientesPage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [search, setSearch] = useState("");
@@ -69,6 +100,18 @@ export default function ClientesPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (!telefoneValido(formData.telefone)) {
+      setError("Informe um telefone com DDD e 10 ou 11 digitos");
+      setLoading(false);
+      return;
+    }
+
+    if (!emailValido(formData.email)) {
+      setError("Informe um email valido");
+      setLoading(false);
+      return;
+    }
 
     try {
       const url = editingCliente
@@ -243,9 +286,15 @@ export default function ClientesPage() {
                   <input
                     type="text"
                     required
+                    inputMode="tel"
+                    placeholder="(11) 99999-9999"
+                    maxLength={15}
                     value={formData.telefone}
                     onChange={(e) =>
-                      setFormData({ ...formData, telefone: e.target.value })
+                      setFormData({
+                        ...formData,
+                        telefone: formatarTelefoneInput(e.target.value)
+                      })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
@@ -256,6 +305,7 @@ export default function ClientesPage() {
                   </label>
                   <input
                     type="email"
+                    placeholder="cliente@email.com"
                     value={formData.email}
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
