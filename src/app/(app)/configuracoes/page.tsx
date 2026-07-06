@@ -12,6 +12,8 @@ export default function ConfiguracoesPage() {
   const [accountError, setAccountError] = useState("");
   const [success, setSuccess] = useState("");
   const [accountSuccess, setAccountSuccess] = useState("");
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [emailCode, setEmailCode] = useState("");
 
   const [formData, setFormData] = useState({
     horarioInicio: "08:00",
@@ -88,6 +90,54 @@ export default function ConfiguracoesPage() {
     setAccountSuccess("");
 
     try {
+      const emailAtual = session?.user?.email || "";
+      const novoEmail = accountData.email.trim().toLowerCase();
+      const emailAlterado = novoEmail !== emailAtual.toLowerCase();
+
+      if (emailAlterado) {
+        if (accountData.nome !== session?.user?.name) {
+          const nomeResponse = await fetch("/api/usuario", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome: accountData.nome })
+          });
+
+          if (!nomeResponse.ok) {
+            const data = await nomeResponse.json();
+            setAccountError(data.error || "Erro ao atualizar nome");
+            return;
+          }
+
+          const updatedUser = await nomeResponse.json();
+
+          await update({
+            ...session,
+            user: {
+              ...session?.user,
+              name: updatedUser.nome,
+              email: updatedUser.email
+            }
+          });
+        }
+
+        const emailResponse = await fetch("/api/usuario/email/iniciar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: novoEmail })
+        });
+
+        if (!emailResponse.ok) {
+          const data = await emailResponse.json();
+          setAccountError(data.error || "Erro ao enviar codigo de verificacao");
+          return;
+        }
+
+        setPendingEmail(novoEmail);
+        setEmailCode("");
+        setAccountSuccess("Codigo de verificacao enviado para o novo email.");
+        return;
+      }
+
       const response = await fetch("/api/usuario", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -119,6 +169,55 @@ export default function ConfiguracoesPage() {
       });
 
       setAccountSuccess("Dados da conta atualizados com sucesso!");
+      setTimeout(() => setAccountSuccess(""), 3000);
+    } catch (err) {
+      setAccountError("Erro ao conectar com o servidor");
+    } finally {
+      setLoadingAccount(false);
+    }
+  };
+
+  const handleConfirmEmail = async () => {
+    if (!pendingEmail || !emailCode) return;
+
+    setLoadingAccount(true);
+    setAccountError("");
+    setAccountSuccess("");
+
+    try {
+      const response = await fetch("/api/usuario/email/confirmar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: pendingEmail,
+          codigo: emailCode
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setAccountError(data.error || "Erro ao confirmar email");
+        return;
+      }
+
+      const updatedUser = await response.json();
+
+      await update({
+        ...session,
+        user: {
+          ...session?.user,
+          name: updatedUser.nome,
+          email: updatedUser.email
+        }
+      });
+
+      setAccountData({
+        nome: updatedUser.nome,
+        email: updatedUser.email
+      });
+      setPendingEmail("");
+      setEmailCode("");
+      setAccountSuccess("Email atualizado com sucesso!");
       setTimeout(() => setAccountSuccess(""), 3000);
     } catch (err) {
       setAccountError("Erro ao conectar com o servidor");
@@ -179,6 +278,35 @@ export default function ConfiguracoesPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
               </div>
+              {pendingEmail && (
+                <div className="rounded-md border border-amber-200 bg-amber-50 p-4">
+                  <p className="text-sm text-amber-800 mb-3">
+                    Digite o codigo enviado para <strong>{pendingEmail}</strong>{" "}
+                    para concluir a alteracao do email.
+                  </p>
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={emailCode}
+                      onChange={(e) =>
+                        setEmailCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      }
+                      placeholder="000000"
+                      className="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleConfirmEmail}
+                      disabled={loadingAccount || emailCode.length !== 6}
+                      className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 transition-colors whitespace-nowrap"
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="mt-6">

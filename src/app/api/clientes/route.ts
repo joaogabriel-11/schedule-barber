@@ -32,6 +32,13 @@ export async function GET(request: NextRequest) {
 
     const clientes = await prisma.cliente.findMany({
       where,
+      include: {
+        _count: {
+          select: {
+            agendamentos: true
+          }
+        }
+      },
       orderBy: { nome: "asc" }
     });
 

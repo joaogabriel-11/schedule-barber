@@ -282,21 +282,25 @@ export default function AgendaPage() {
       backgroundColor: getEventBackgroundColor(a.status),
       borderColor: getEventBackgroundColor(a.status),
       color: getEventBackgroundColor(a.status),
-      extendedProps: { 
+      extendedProps: {
         agendamento: a,
         clienteNome: a.cliente.nome,
         servicoNome: a.servico.nome,
         status: a.status,
-        duration: a.servico.duracaoMin
+        duration: a.servico.duracaoMin,
       },
       // Tooltip com informações completas (usando horário original)
-      tooltip: `${a.cliente.nome} - ${a.servico.nome}\n${new Date(a.dataHora).toLocaleString('pt-BR', { 
-        dateStyle: 'short', 
-        timeStyle: 'short' 
-      })} - ${new Date(new Date(a.dataHora).getTime() + a.servico.duracaoMin * 60000).toLocaleTimeString('pt-BR', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: false 
+      tooltip: `${a.cliente.nome} - ${a.servico.nome}\n${new Date(
+        a.dataHora,
+      ).toLocaleString("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short",
+      })} - ${new Date(
+        new Date(a.dataHora).getTime() + a.servico.duracaoMin * 60000,
+      ).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
       })}\nStatus: ${getStatusLabel(a.status)}`,
     };
   });
@@ -411,105 +415,118 @@ export default function AgendaPage() {
                 // Adiciona tooltip nativo com informações completas
                 const tooltip = info.event.extendedProps.tooltip as string;
                 if (tooltip) {
-                  info.el.setAttribute('title', tooltip);
+                  info.el.setAttribute("title", tooltip);
                 }
                 // Garante que o evento seja visível na visualização mensal
-                info.el.style.opacity = '1';
-                info.el.style.visibility = 'visible';
+                info.el.style.opacity = "1";
+                info.el.style.visibility = "visible";
                 info.el.style.backgroundColor = info.event.backgroundColor;
                 info.el.style.borderColor = info.event.borderColor;
-                info.el.style.color = '#000000';
-                info.el.style.fontWeight = 'bold';
-                info.el.style.cursor = 'default';
+                info.el.style.color = "#000000";
+                info.el.style.fontWeight = "bold";
+                info.el.style.cursor = "default";
               }}
               eventContent={(eventInfo) => {
                 const props = eventInfo.event.extendedProps as any;
                 const endDate = eventInfo.event.end as Date | null;
                 const startDate = eventInfo.event.start as Date;
-                const duration = endDate ? 
-                  (endDate.getTime() - startDate.getTime()) / 60000 : 
-                  0;
-                
+                const duration = endDate
+                  ? (endDate.getTime() - startDate.getTime()) / 60000
+                  : 0;
+
                 const formatTime = (date: Date) => {
-                  return date.toLocaleTimeString('pt-BR', { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: false 
+                  return date.toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
                   });
                 };
-                
+
                 const startTime = startDate;
-                const endTime = endDate || new Date(startTime.getTime() + duration * 60000);
+                const endTime =
+                  endDate || new Date(startTime.getTime() + duration * 60000);
                 const timeRange = `${formatTime(startTime)} - ${formatTime(endTime)}`;
-                
+
                 // Para eventos muito curtos, mostra horário, cliente e serviço
                 if (duration < 20) {
                   return (
-                    <div style={{
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      justifyContent: 'flex-start',
-                      padding: '3px 6px',
-                      overflow: 'hidden',
-                      width: '100%'
-                    }}>
-                      <span style={{
-                        fontWeight: '600',
-                        fontSize: '12px',
-                        lineHeight: '16px',
-                        color: 'white',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        width: '100%',
-                        textAlign: 'left'
-                      }}>
+                    <div
+                      style={{
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "flex-start",
+                        justifyContent: "flex-start",
+                        padding: "3px 6px",
+                        overflow: "hidden",
+                        width: "100%",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontWeight: "600",
+                          fontSize: "12px",
+                          lineHeight: "16px",
+                          color: "white",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          width: "100%",
+                          textAlign: "left",
+                        }}
+                      >
                         {props.clienteNome} - {props.servicoNome}
                       </span>
                     </div>
                   );
                 }
-                
+
                 // Para eventos normais, mostra horário, cliente e serviço
                 return (
-                  <div style={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    justifyContent: 'flex-start',
-                    padding: '4px 6px',
-                    overflow: 'hidden',
-                    gap: '2px'
-                  }}>
-                    <div style={{
-                      fontWeight: '500',
-                      fontSize: '10px',
-                      color: 'rgba(255,255,255,0.8)',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      justifyContent: "flex-start",
+                      padding: "4px 6px",
+                      overflow: "hidden",
+                      gap: "2px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontWeight: "500",
+                        fontSize: "10px",
+                        color: "rgba(255,255,255,0.8)",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {timeRange}
                     </div>
-                    <div style={{
-                      fontWeight: '600',
-                      fontSize: '12px',
-                      color: 'white',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
+                    <div
+                      style={{
+                        fontWeight: "600",
+                        fontSize: "12px",
+                        color: "white",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {props.clienteNome}
                     </div>
-                    <div style={{
-                      fontSize: '11px',
-                      color: 'rgba(255,255,255,0.9)',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "rgba(255,255,255,0.9)",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {props.servicoNome}
                     </div>
                   </div>
@@ -781,7 +798,8 @@ export default function AgendaPage() {
               Confirmar Cancelamento
             </h2>
             <p className="text-gray-600 mb-6">
-              Tem certeza que deseja cancelar este agendamento? Esta ação não pode ser desfeita.
+              Tem certeza que deseja cancelar este agendamento? Esta ação não
+              pode ser desfeita.
             </p>
             <div className="flex justify-end gap-3">
               <button

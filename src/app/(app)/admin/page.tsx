@@ -384,6 +384,20 @@ export default function AdminPage() {
               Tem certeza que deseja excluir o usuário <strong>{deleteUser.nome}</strong> ({deleteUser.email})?
               Esta ação não pode ser desfeita e removerá todos os dados relacionados.
             </p>
+            {deleteUser._count.agendamentos > 0 ? (
+              <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                Este usuario possui {deleteUser._count.agendamentos}{" "}
+                {deleteUser._count.agendamentos === 1
+                  ? "agendamento"
+                  : "agendamentos"}
+                . Ao excluir este usuario, todos os agendamentos dele tambem
+                serao excluidos.
+              </div>
+            ) : (
+              <div className="mb-4 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+                Este usuario nao possui agendamentos cadastrados.
+              </div>
+            )}
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setDeleteUser(null)}
@@ -396,7 +410,11 @@ export default function AdminPage() {
                 disabled={actionLoading}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50"
               >
-                {actionLoading ? "Excluindo..." : "Confirmar Exclusão"}
+                {actionLoading
+                  ? "Excluindo..."
+                  : deleteUser._count.agendamentos > 0
+                    ? "Excluir usuario e agendamentos"
+                    : "Confirmar Exclusão"}
               </button>
             </div>
           </div>

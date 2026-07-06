@@ -142,10 +142,18 @@ export async function DELETE(
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    const cliente = await prisma.cliente.update({
-      where: { id },
-      data: { ativo: false }
-    });
+    const [, cliente] = await prisma.$transaction([
+      prisma.agendamento.deleteMany({
+        where: {
+          clienteId: id,
+          usuarioId: session.user.id
+        }
+      }),
+      prisma.cliente.update({
+        where: { id },
+        data: { ativo: false }
+      })
+    ]);
 
     return NextResponse.json(cliente);
   } catch (error) {

@@ -36,6 +36,7 @@ model Usuario {
   agendamentos      Agendamento[]
   configuracao      Configuracao?
   tokensRecuperacao TokenRecuperacao[]
+  alteracoesEmail   EmailAlteracao[]
   clientes          Cliente[]
   servicos          Servico[]
 
@@ -149,6 +150,26 @@ model CodigoVerificacao {
   @@index([expiraEm])
   @@index([createdAt])
   @@map("codigos_verificacao")
+}
+
+model EmailAlteracao {
+  id         String   @id @default(cuid())
+  usuarioId  String
+  novoEmail  String
+  codigo     String
+  expiraEm   DateTime
+  tentativas Int      @default(0)
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([novoEmail])
+  @@index([codigo])
+  @@index([expiraEm])
+  @@index([createdAt])
+  @@map("alteracoes_email")
 }
 
 model TentativaLogin {

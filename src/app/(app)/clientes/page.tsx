@@ -8,6 +8,9 @@ interface Cliente {
   nome: string;
   telefone: string;
   email: string | null;
+  _count?: {
+    agendamentos: number;
+  };
 }
 
 function formatarTelefoneInput(value: string) {
@@ -46,6 +49,7 @@ export default function ClientesPage() {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
+  const [deleteCliente, setDeleteCliente] = useState<Cliente | null>(null);
   const [formData, setFormData] = useState({
     nome: "",
     telefone: "",
@@ -140,17 +144,20 @@ export default function ClientesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja desativar este cliente?")) {
-      return;
-    }
+  const handleDelete = (cliente: Cliente) => {
+    setDeleteCliente(cliente);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteCliente) return;
 
     try {
-      const response = await fetch(`/api/clientes/${id}`, {
+      const response = await fetch(`/api/clientes/${deleteCliente.id}`, {
         method: "DELETE"
       });
 
       if (response.ok) {
+        setDeleteCliente(null);
         fetchClientes(search);
       }
     } catch (err) {
@@ -237,7 +244,7 @@ export default function ClientesPage() {
                         <Edit2 size={16} />
                       </button>
                       <button
-                        onClick={() => handleDelete(cliente.id)}
+                        onClick={() => handleDelete(cliente)}
                         className="text-red-600 hover:text-red-900"
                         title="Desativar"
                       >
@@ -331,6 +338,52 @@ export default function ClientesPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {deleteCliente && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-lg max-w-md w-full p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Confirmar exclusao
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Tem certeza que deseja excluir o cliente{" "}
+              <strong>{deleteCliente.nome}</strong>?
+            </p>
+            {(deleteCliente._count?.agendamentos || 0) > 0 ? (
+              <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                Este cliente possui {deleteCliente._count?.agendamentos}{" "}
+                {deleteCliente._count?.agendamentos === 1
+                  ? "agendamento"
+                  : "agendamentos"}
+                . Ao excluir este cliente, todos os agendamentos dele tambem
+                serao excluidos.
+              </div>
+            ) : (
+              <div className="mb-4 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+                Este cliente nao possui agendamentos cadastrados.
+              </div>
+            )}
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setDeleteCliente(null)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              >
+                {(deleteCliente._count?.agendamentos || 0) > 0
+                  ? "Excluir cliente e agendamentos"
+                  : "Confirmar exclusao"}
+              </button>
+            </div>
           </div>
         </div>
       )}

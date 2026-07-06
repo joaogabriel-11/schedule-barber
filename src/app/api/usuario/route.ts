@@ -27,19 +27,16 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (email) {
-      // Check if email is already in use by another user
-      const existingUser = await prisma.usuario.findUnique({
-        where: { email },
-      });
+      // Email changes require confirmation by code sent to the new email.
+      const emailNormalizado = String(email).trim().toLowerCase();
 
-      if (existingUser && existingUser.id !== session.user.id) {
+      if (emailNormalizado !== session.user.email?.toLowerCase()) {
         return NextResponse.json(
-          { error: "Este email já está em uso por outro usuário" },
-          { status: 409 }
+          { error: "Para alterar o email, solicite e confirme o codigo de verificacao" },
+          { status: 400 }
         );
       }
 
-      updateData.email = email;
     }
 
     const usuario = await prisma.usuario.update({
