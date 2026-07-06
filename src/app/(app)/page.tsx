@@ -6,7 +6,8 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { Plus } from "lucide-react";
+import { MessageCircle, Plus } from "lucide-react";
+import { criarLinkWhatsAppAgendamento } from "@/utils/whatsappAgendamento";
 
 interface Cliente {
   id: string;
@@ -391,7 +392,7 @@ export default function AgendaPage() {
             <FullCalendar
               allDaySlot={false}
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-              initialView="timeGridWeek"
+              initialView="timeGridDay"
               headerToolbar={{
                 left: "prev,next today",
                 center: "title",
@@ -705,6 +706,20 @@ export default function AgendaPage() {
                 <strong>Data/Hora:</strong>{" "}
                 {new Date(selectedAgendamento.dataHora).toLocaleString("pt-BR")}
               </p>
+              <a
+                href={criarLinkWhatsAppAgendamento({
+                  telefone: selectedAgendamento.cliente.telefone,
+                  clienteNome: selectedAgendamento.cliente.nome,
+                  servicoNome: selectedAgendamento.servico.nome,
+                  dataHora: selectedAgendamento.dataHora,
+                })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
+              >
+                <MessageCircle size={16} />
+                Enviar WhatsApp
+              </a>
             </div>
             <form onSubmit={handleUpdateStatus}>
               <div className="space-y-4">
