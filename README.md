@@ -53,7 +53,7 @@ O projeto foi desenvolvido com foco em:
 
 - Calendário interativo (visão mensal, semanal e diária)
 - Validação automática de conflito de horário na criação e edição
-- Status do agendamento: `AGENDADO`, `CONFIRMADO`, `CONCLUIDO`, `CANCELADO`, `NO_SHOW`
+- Status do agendamento: `AGENDADO`, `CONCLUIDO`, `CANCELADO`, `NO_SHOW`
 - Slots de horário fixos de 10 em 10 minutos, respeitando o horário de funcionamento configurado
 - Visão de lista otimizada para mobile
 

@@ -272,9 +272,7 @@ export default function AgendaPage() {
     const endTime = new Date(
       new Date(a.dataHora).getTime() + a.servico.duracaoMin * 60000,
     );
-    // Subtrai 1 segundo do horário de término para evitar que eventos encostados sejam tratados como sobrepostos
-    endTime.setSeconds(endTime.getSeconds() - 1);
-    
+
     return {
       id: a.id,
       title: `${a.cliente.nome} - ${a.servico.nome}`,
@@ -405,7 +403,7 @@ export default function AgendaPage() {
               slotDuration="00:10:00"
               slotLabelInterval="00:30:00"
               displayEventEnd={true}
-              eventMinHeight={50}
+              eventMinHeight={24}
               eventMinWidth={80}
               slotEventOverlap={false}
               eventDidMount={(info) => {
@@ -421,6 +419,7 @@ export default function AgendaPage() {
                 info.el.style.borderColor = info.event.borderColor;
                 info.el.style.color = '#000000';
                 info.el.style.fontWeight = 'bold';
+                info.el.style.cursor = 'default';
               }}
               eventContent={(eventInfo) => {
                 const props = eventInfo.event.extendedProps as any;
@@ -448,28 +447,16 @@ export default function AgendaPage() {
                     <div style={{
                       height: '100%',
                       display: 'flex',
-                      flexDirection: 'column',
                       alignItems: 'flex-start',
                       justifyContent: 'flex-start',
-                      padding: '2px 4px',
+                      padding: '3px 6px',
                       overflow: 'hidden',
-                      gap: '1px'
+                      width: '100%'
                     }}>
                       <span style={{
-                        fontWeight: '500',
-                        fontSize: '9px',
-                        color: 'rgba(255,255,255,0.8)',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        width: '100%',
-                        textAlign: 'left'
-                      }}>
-                        {timeRange}
-                      </span>
-                      <span style={{
                         fontWeight: '600',
-                        fontSize: '10px',
+                        fontSize: '12px',
+                        lineHeight: '16px',
                         color: 'white',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
