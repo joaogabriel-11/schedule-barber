@@ -4,6 +4,8 @@ import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 import { checkLoginRateLimit, recordFailedLoginAttempt, resetLoginAttempts } from "./login-rate-limit";
 
+const useSecureCookies = process.env.NODE_ENV === "production";
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -97,7 +99,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: false
+        secure: useSecureCookies
       }
     },
     callbackUrl: {
@@ -106,7 +108,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: false
+        secure: useSecureCookies
       }
     },
     csrfToken: {
@@ -115,7 +117,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: false
+        secure: useSecureCookies
       }
     }
   }

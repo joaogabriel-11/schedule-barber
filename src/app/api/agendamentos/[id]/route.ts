@@ -79,9 +79,30 @@ export async function PATCH(
     let duracaoMin = agendamentoExistente.servico.duracaoMin;
     let dataHoraDate = agendamentoExistente.dataHora;
 
+    if (clienteId) {
+      const novoCliente = await prisma.cliente.findFirst({
+        where: {
+          id: clienteId,
+          usuarioId: session.user.id,
+          ativo: true,
+        },
+      });
+
+      if (!novoCliente) {
+        return NextResponse.json(
+          { error: "Cliente nÃ£o encontrado" },
+          { status: 404 },
+        );
+      }
+    }
+
     if (servicoId) {
-      const novoServico = await prisma.servico.findUnique({
-        where: { id: servicoId },
+      const novoServico = await prisma.servico.findFirst({
+        where: {
+          id: servicoId,
+          usuarioId: session.user.id,
+          ativo: true,
+        },
       });
 
       if (!novoServico) {

@@ -72,8 +72,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const servico = await prisma.servico.findUnique({
-      where: { id: servicoId }
+    const cliente = await prisma.cliente.findFirst({
+      where: {
+        id: clienteId,
+        usuarioId: session.user.id,
+        ativo: true
+      }
+    });
+
+    if (!cliente) {
+      return NextResponse.json(
+        { error: "Cliente nÃ£o encontrado" },
+        { status: 404 }
+      );
+    }
+
+    const servico = await prisma.servico.findFirst({
+      where: {
+        id: servicoId,
+        usuarioId: session.user.id,
+        ativo: true
+      }
     });
 
     if (!servico) {
