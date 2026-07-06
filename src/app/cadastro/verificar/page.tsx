@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function VerificarCadastroPage() {
+function VerificarCadastroContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -192,5 +192,19 @@ export default function VerificarCadastroPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function VerificarCadastroPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-gray-600">Carregando...</div>
+        </div>
+      }
+    >
+      <VerificarCadastroContent />
+    </Suspense>
   );
 }
